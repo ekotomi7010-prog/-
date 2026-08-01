@@ -1,0 +1,1230 @@
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ダンス コマ割りラボ</title>
+
+<style>
+  /* ---------- tokens ---------- */
+  :root {
+    color-scheme: light dark;
+
+    --ground: #e9ecef;
+    --surface: #f7f8f9;
+    --surface-2: #dfe3e8;
+    --line: #c8cfd6;
+    --line-soft: #dde2e8;
+
+    --ink: #171c22;
+    --ink-2: #4c565f;
+    --ink-3: #7b858e;
+
+    /* gaffer tape — marks the count you are working on */
+    --tape: #c47b18;
+    --tape-ink: #ffffff;
+    --tape-wash: #c47b1815;
+
+    /* mirror light — structure, timecodes, links */
+    --mirror: #2f7c92;
+
+    --good: #2f7d52;
+    --bad: #b8402f;
+
+    --radius: 10px;
+    --sans: "Helvetica Neue", Helvetica, "Hiragino Sans", "Hiragino Kaku Gothic ProN",
+      "Noto Sans JP", "Yu Gothic", Meiryo, sans-serif;
+    --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Roboto Mono", monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ground: #10141a;
+      --surface: #181e26;
+      --surface-2: #212933;
+      --line: #313b47;
+      --line-soft: #262f3a;
+
+      --ink: #e7ebf0;
+      --ink-2: #a3aeb9;
+      --ink-3: #6e7a86;
+
+      --tape: #d9963c;
+      --tape-ink: #1a1206;
+      --tape-wash: #d9963c1f;
+
+      --mirror: #6aa7b8;
+
+      --good: #6fbf8b;
+      --bad: #e0685f;
+    }
+  }
+
+  /* viewer toggle must win in both directions */
+  :root[data-theme="dark"] {
+    --ground: #10141a;
+    --surface: #181e26;
+    --surface-2: #212933;
+    --line: #313b47;
+    --line-soft: #262f3a;
+    --ink: #e7ebf0;
+    --ink-2: #a3aeb9;
+    --ink-3: #6e7a86;
+    --tape: #d9963c;
+    --tape-ink: #1a1206;
+    --tape-wash: #d9963c1f;
+    --mirror: #6aa7b8;
+    --good: #6fbf8b;
+    --bad: #e0685f;
+  }
+
+  :root[data-theme="light"] {
+    --ground: #e9ecef;
+    --surface: #f7f8f9;
+    --surface-2: #dfe3e8;
+    --line: #c8cfd6;
+    --line-soft: #dde2e8;
+    --ink: #171c22;
+    --ink-2: #4c565f;
+    --ink-3: #7b858e;
+    --tape: #c47b18;
+    --tape-ink: #ffffff;
+    --tape-wash: #c47b1815;
+    --mirror: #2f7c92;
+    --good: #2f7d52;
+    --bad: #b8402f;
+  }
+
+  /* ---------- base ---------- */
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.7;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  .wrap {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 20px 16px 80px;
+  }
+
+  .masthead { padding: 8px 0 20px; }
+
+  .masthead h1 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-wrap: balance;
+  }
+
+  .masthead p {
+    margin: 6px 0 0;
+    color: var(--ink-2);
+    font-size: 13.5px;
+    line-height: 1.6;
+  }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--mirror);
+    margin: 0 0 6px;
+  }
+
+  /* ---------- drop zone ---------- */
+  .drop {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 52px 20px;
+    border: 2px dashed var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+    color: var(--ink);
+    text-align: center;
+    cursor: pointer;
+    width: 100%;
+    font: inherit;
+    transition: border-color 0.15s, background 0.15s;
+  }
+
+  .drop:hover, .drop:focus-visible { border-color: var(--tape); }
+  .drop.is-over { border-color: var(--tape); background: var(--tape-wash); }
+  .drop strong { font-size: 17px; font-weight: 700; }
+  .drop span { color: var(--ink-3); font-size: 13px; }
+
+  /* ---------- layout ---------- */
+  .stage { display: grid; gap: 20px; }
+
+  @media (min-width: 900px) {
+    .stage { grid-template-columns: minmax(0, 420px) minmax(0, 1fr); align-items: start; }
+  }
+
+  .player-col {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background: var(--ground);
+    padding: 8px 0 12px;
+    margin: 0 -16px;
+    padding-left: 16px;
+    padding-right: 16px;
+    border-bottom: 1px solid var(--line-soft);
+  }
+
+  @media (min-width: 900px) {
+    .player-col { margin: 0; padding-left: 0; padding-right: 0; border-bottom: 0; top: 16px; }
+  }
+
+  .screen {
+    background: #000;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow: hidden;
+    line-height: 0;
+  }
+
+  .screen video { width: 100%; max-height: 46vh; display: block; }
+
+  @media (min-width: 900px) {
+    .screen video { max-height: 60vh; }
+  }
+
+  /* ---------- controls ---------- */
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    margin-top: 10px;
+  }
+
+  .seg-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    padding: 3px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface);
+  }
+
+  .seg-toggle .lbl {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.12em;
+    color: var(--ink-3);
+    padding: 0 7px 0 5px;
+    text-transform: uppercase;
+  }
+
+  button {
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+  }
+
+  .rate {
+    border: 0;
+    background: transparent;
+    color: var(--ink-2);
+    font-family: var(--mono);
+    font-size: 13px;
+    padding: 5px 10px;
+    border-radius: 6px;
+    min-height: 34px;
+  }
+
+  .rate[aria-pressed="true"] { background: var(--tape); color: var(--tape-ink); font-weight: 700; }
+
+  .btn {
+    border: 1px solid var(--line);
+    background: var(--surface);
+    border-radius: 8px;
+    padding: 8px 13px;
+    font-size: 13.5px;
+    min-height: 40px;
+    transition: border-color 0.15s, background 0.15s;
+  }
+
+  .btn:hover { border-color: var(--ink-3); }
+  .btn[aria-pressed="true"] { background: var(--tape); color: var(--tape-ink); border-color: var(--tape); font-weight: 700; }
+  .btn.primary { background: var(--tape); color: var(--tape-ink); border-color: var(--tape); font-weight: 700; }
+  .btn.primary:hover { filter: brightness(1.07); }
+  .btn:disabled { opacity: 0.42; cursor: not-allowed; }
+
+  :focus-visible { outline: 2px solid var(--mirror); outline-offset: 2px; }
+
+  .now {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--ink-2);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .now b { color: var(--tape); }
+
+  .linkish {
+    background: none;
+    border: 0;
+    padding: 4px 2px;
+    color: var(--mirror);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    font-size: 12px;
+  }
+
+  /* ---------- settings bar ---------- */
+  .bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: flex-end;
+    padding: 14px;
+    border: 1px solid var(--line-soft);
+    border-radius: var(--radius);
+    background: var(--surface);
+  }
+
+  .field { display: flex; flex-direction: column; gap: 4px; }
+
+  .field label {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+
+  input[type="number"], textarea {
+    font: inherit;
+    color: var(--ink);
+    background: var(--ground);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 9px 11px;
+  }
+
+  input[type="number"] { width: 92px; font-family: var(--mono); min-height: 40px; }
+  input[type="number"]:focus, textarea:focus { border-color: var(--mirror); outline: none; }
+
+  .meta {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    color: var(--ink-3);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .notice { font-size: 13px; color: var(--ink-2); }
+  .notice.err { color: var(--bad); }
+
+  /* ---------- segment strips ---------- */
+  .strips { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
+
+  .strip {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr);
+    border: 1px solid var(--line-soft);
+    border-radius: var(--radius);
+    background: var(--surface);
+    overflow: hidden;
+  }
+
+  .strip.is-active { border-color: var(--tape); background: var(--tape-wash); }
+
+  .tab {
+    background: var(--surface-2);
+    border: 0;
+    border-right: 1px solid var(--line-soft);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    padding: 10px 2px;
+    font-family: var(--mono);
+    color: var(--ink-2);
+  }
+
+  .strip.is-active .tab { background: var(--tape); color: var(--tape-ink); border-right-color: var(--tape); }
+  .tab .n { font-size: 17px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .tab .play { font-size: 9px; letter-spacing: 0.1em; opacity: 0.75; }
+
+  .strip-body { padding: 10px 12px 12px; min-width: 0; }
+
+  .times {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    color: var(--ink-3);
+    font-variant-numeric: tabular-nums;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .frames {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+    margin: 8px 0 10px;
+    max-width: 420px;
+  }
+
+  .frames figure { margin: 0; }
+
+  .frames img {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid var(--line);
+    background: var(--ground);
+    display: block;
+  }
+
+  .frames figcaption {
+    font-family: var(--mono);
+    font-size: 9.5px;
+    letter-spacing: 0.1em;
+    color: var(--ink-3);
+    text-align: center;
+    margin-top: 3px;
+  }
+
+  .frames.pending {
+    height: 62px;
+    border: 1px dashed var(--line);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: var(--ink-3);
+  }
+
+  .note {
+    width: 100%;
+    min-height: 78px;
+    resize: vertical;
+    font-size: 14px;
+    line-height: 1.75;
+  }
+
+  .note::placeholder { color: var(--ink-3); }
+  .note.filled { border-color: var(--good); }
+
+  /* ---------- sheet / handoff ---------- */
+  .panel {
+    border: 1px solid var(--line-soft);
+    border-radius: var(--radius);
+    background: var(--surface);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .panel h2 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+  }
+
+  .steps {
+    margin: 0;
+    padding-left: 0;
+    list-style: none;
+    counter-reset: step;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .steps li {
+    counter-increment: step;
+    display: grid;
+    grid-template-columns: 24px minmax(0, 1fr);
+    gap: 9px;
+    font-size: 13.5px;
+    color: var(--ink-2);
+    line-height: 1.65;
+  }
+
+  .steps li::before {
+    content: counter(step);
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--mirror);
+    border: 1px solid var(--mirror);
+    border-radius: 50%;
+    width: 21px;
+    height: 21px;
+    display: grid;
+    place-items: center;
+    margin-top: 1px;
+  }
+
+  .sheets { display: flex; flex-direction: column; gap: 12px; }
+
+  .sheets img {
+    width: 100%;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    display: block;
+    background: #fff;
+  }
+
+  .hint { font-size: 12px; color: var(--ink-3); margin: 0; }
+  .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+
+  details summary {
+    cursor: pointer;
+    font-size: 13.5px;
+    color: var(--mirror);
+    padding: 4px 0;
+  }
+
+  .paste { width: 100%; min-height: 120px; margin-top: 8px; font-size: 13.5px; }
+  .hidden { display: none !important; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+  }
+</style>
+
+<div class="wrap">
+  <header class="masthead">
+    <p class="eyebrow">Rehearsal / count sheet</p>
+    <h1>ダンス コマ割りラボ</h1>
+    <p>
+      動画を秒数で区切って、区間ごとにコマを並べ、その区間だけをループ再生します。
+      解説はコマ表を Claude に渡して受け取り、ここに書き戻します。APIキーは要りません。
+    </p>
+  </header>
+
+  <button class="drop" id="drop" type="button">
+    <strong>動画を選ぶ</strong>
+    <span>タップして選択、または動画をドロップ（mp4 / 10秒前後）</span>
+  </button>
+  <input id="file" class="sr" type="file" accept="video/*">
+  <p class="notice err hidden" id="fileErr"></p>
+
+  <div class="stage hidden" id="stage">
+    <div class="player-col">
+      <div class="screen">
+        <video id="video" playsinline muted controls></video>
+      </div>
+
+      <div class="controls">
+        <div class="seg-toggle">
+          <span class="lbl">速度</span>
+          <button class="rate" type="button" data-rate="0.25" aria-pressed="false">0.25×</button>
+          <button class="rate" type="button" data-rate="0.5" aria-pressed="false">0.5×</button>
+          <button class="rate" type="button" data-rate="1" aria-pressed="true">1×</button>
+        </div>
+        <button class="btn" id="mirror" type="button" aria-pressed="false">左右反転</button>
+      </div>
+
+      <div class="controls">
+        <p class="now" id="now">区間をタップするとループ再生します</p>
+      </div>
+    </div>
+
+    <div class="stage-col" style="display:flex; flex-direction:column; gap:16px; min-width:0;">
+      <div class="bar">
+        <div class="field">
+          <label for="interval">区切り（秒）</label>
+          <input id="interval" type="number" min="0.5" max="30" step="0.5" value="2">
+        </div>
+        <button class="btn" id="reslice" type="button">区切り直す</button>
+        <button class="btn primary" id="makeSheet" type="button">コマ表を作る</button>
+        <span class="meta" id="meta"></span>
+      </div>
+
+      <p class="notice hidden" id="status"></p>
+      <p class="notice err hidden" id="err"></p>
+
+      <div class="strips" id="strips"></div>
+
+      <section class="panel hidden" id="handoff">
+        <h2>解説を受け取る</h2>
+        <ol class="steps">
+          <li>下のコマ表を長押しして保存（またはボタンで書き出し）</li>
+          <li>Claude とのチャットに画像を貼り、「依頼文をコピー」した文章を一緒に送る</li>
+          <li>返ってきた解説を、各区間のメモ欄に貼るか、下の一括貼り付けに入れる</li>
+        </ol>
+
+        <div class="row">
+          <button class="btn" id="copyPrompt" type="button">依頼文をコピー</button>
+          <button class="btn" id="saveSheet" type="button">画像を書き出す</button>
+          <span class="meta" id="handoffMeta"></span>
+        </div>
+
+        <div class="sheets" id="sheets"></div>
+
+        <details>
+          <summary>解説をまとめて貼り付ける</summary>
+          <p class="hint" style="margin-top:8px;">
+            「区間1」「区間2」… で始まるまとまりごとに、対応するメモ欄へ振り分けます。
+          </p>
+          <textarea class="paste" id="paste" placeholder="区間1&#10;体の向き: …&#10;&#10;区間2&#10;体の向き: …"></textarea>
+          <div class="row" style="margin-top:8px;">
+            <button class="btn" id="applyPaste" type="button">メモ欄に振り分ける</button>
+            <span class="meta" id="pasteMeta"></span>
+          </div>
+        </details>
+      </section>
+
+      <div class="row">
+        <button class="linkish" id="reset" type="button">別の動画を読み込む</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  "use strict";
+
+  var FRAME_W = 480;          // 抽出するフレームの横幅
+  var SHEET_FRAME_W = 400;    // コマ表に描くときの横幅
+  var PER_SHEET = 6;          // コマ表1枚あたりの区間数
+  var LABELS = ["開始", "中間", "終了"];
+
+  var PROMPT =
+    "添付はダンス動画のコマ表です。各行が1つの区間で、左から「開始・中間・終了」の3枚が並んでいます。\n\n" +
+    "区間ごとに、次の見出しで日本語の解説を書いてください。\n\n" +
+    "体の向き:\n足のステップ:\n腕・手の動き:\n頭・目線:\nコツ:\n\n" +
+    "ルール:\n" +
+    "- 振り付けの正式名称は無理に当てず、見たままを言語化してください。\n" +
+    "- 画像から判断できない項目は「判別しづらい」とだけ書いてください。\n" +
+    "- 「コツ」は、その区間を練習するときに意識することを一言で。\n" +
+    "- 各区間の先頭に「区間1」のように番号だけの行を置いてください（貼り戻しに使います）。";
+
+  var el = function (id) { return document.getElementById(id); };
+
+  var state = {
+    url: null,
+    fileName: "",
+    duration: 0,
+    interval: 2,
+    segments: [],
+    active: null,
+    rate: 1,
+    mirrored: false,
+    busy: false
+  };
+
+  /* ---------- helpers ---------- */
+
+  function fmt(sec) {
+    var m = Math.floor(sec / 60);
+    var s = (sec - m * 60).toFixed(1);
+    // 9.97 → "10.0" のように繰り上がるので、丸めた後の文字列で桁を判定する
+    if (parseFloat(s) >= 60) { m += 1; s = "0.0"; }
+    return m + ":" + (s.length < 4 ? "0" + s : s);
+  }
+
+  function notesKey() {
+    return "dance-lab:" + state.fileName + ":" + state.interval;
+  }
+
+  function loadNotes() {
+    try {
+      return JSON.parse(localStorage.getItem(notesKey()) || "{}");
+    } catch (e) {
+      return {};
+    }
+  }
+
+  function saveNote(index, text) {
+    try {
+      var all = loadNotes();
+      if (text) { all[index] = text; } else { delete all[index]; }
+      localStorage.setItem(notesKey(), JSON.stringify(all));
+    } catch (e) { /* 容量超過などは黙って諦める */ }
+  }
+
+  function show(node, on) { node.classList.toggle("hidden", !on); }
+
+  function setStatus(text) {
+    var node = el("status");
+    node.textContent = text || "";
+    show(node, !!text);
+  }
+
+  function setError(text) {
+    var node = el("err");
+    node.textContent = text || "";
+    show(node, !!text);
+  }
+
+  /* ---------- 区間の組み立て ---------- */
+
+  function buildSegments(duration, interval) {
+    var out = [];
+    var count = Math.max(1, Math.ceil(duration / interval));
+    for (var i = 0; i < count; i++) {
+      var start = i * interval;
+      var end = Math.min(duration, start + interval);
+      if (end - start < 0.2 && out.length > 0) break;
+      out.push({ index: i, start: start, end: end, frames: [], note: "" });
+    }
+    return out;
+  }
+
+  /* ---------- フレーム抽出 ---------- */
+
+  function seek(video, time) {
+    return new Promise(function (resolve, reject) {
+      var timer = setTimeout(function () {
+        cleanup();
+        reject(new Error("シークが応答しませんでした"));
+      }, 12000);
+
+      function cleanup() {
+        clearTimeout(timer);
+        video.removeEventListener("seeked", onSeeked);
+        video.removeEventListener("error", onError);
+      }
+      function onSeeked() { cleanup(); resolve(); }
+      function onError() { cleanup(); reject(new Error("シークに失敗しました")); }
+
+      video.addEventListener("seeked", onSeeked);
+      video.addEventListener("error", onError);
+      video.currentTime = time;
+    });
+  }
+
+  function loadOffscreenVideo(url) {
+    return new Promise(function (resolve, reject) {
+      var v = document.createElement("video");
+      v.src = url;
+      v.muted = true;
+      v.playsInline = true;
+      v.setAttribute("playsinline", "");
+      v.preload = "auto";
+
+      function cleanup() {
+        v.removeEventListener("loadeddata", onReady);
+        v.removeEventListener("error", onError);
+      }
+      function onReady() { cleanup(); resolve(v); }
+      function onError() {
+        cleanup();
+        reject(new Error("この動画は読み込めませんでした（ブラウザが対応していない形式かもしれません）"));
+      }
+
+      v.addEventListener("loadeddata", onReady);
+      v.addEventListener("error", onError);
+      v.load();
+    });
+  }
+
+  function extractFrames(url, segments, onProgress) {
+    var video, canvas, ctx;
+
+    return loadOffscreenVideo(url)
+      .then(function (v) {
+        video = v;
+        // iOS Safari は一度再生しないとフレームが黒くなることがある
+        return video.play().then(function () { video.pause(); }).catch(function () {});
+      })
+      .then(function () {
+        var scale = Math.min(1, FRAME_W / (video.videoWidth || FRAME_W));
+        canvas = document.createElement("canvas");
+        canvas.width = Math.round((video.videoWidth || FRAME_W) * scale);
+        canvas.height = Math.round((video.videoHeight || 270) * scale);
+        ctx = canvas.getContext("2d");
+
+        var duration = video.duration;
+        var total = segments.length * 3;
+        var done = 0;
+        var chain = Promise.resolve();
+        var result = [];
+
+        segments.forEach(function (seg) {
+          var mid = (seg.start + seg.end) / 2;
+          var last = Math.max(seg.start, Math.min(seg.end, duration) - 0.05);
+          var frames = [];
+          result.push(frames);
+
+          [seg.start, mid, last].forEach(function (t) {
+            chain = chain.then(function () {
+              return seek(video, Math.max(0, Math.min(t, duration - 0.01)));
+            }).then(function () {
+              ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+              frames.push(canvas.toDataURL("image/jpeg", 0.72));
+              done += 1;
+              if (onProgress) onProgress(done, total);
+            });
+          });
+        });
+
+        return chain.then(function () {
+          video.removeAttribute("src");
+          video.load();
+          return result;
+        });
+      });
+  }
+
+  /* ---------- 描画 ---------- */
+
+  function renderStrips() {
+    var host = el("strips");
+    host.textContent = "";
+
+    state.segments.forEach(function (seg) {
+      var strip = document.createElement("div");
+      strip.className = "strip" + (state.active === seg.index ? " is-active" : "");
+
+      var tab = document.createElement("button");
+      tab.type = "button";
+      tab.className = "tab";
+      tab.setAttribute("aria-label", "区間 " + (seg.index + 1) + " をループ再生");
+      tab.innerHTML =
+        '<span class="n">' + (seg.index + 1) + "</span>" +
+        '<span class="play">' + (state.active === seg.index ? "LOOP" : "▶") + "</span>";
+      tab.addEventListener("click", function () { setActive(seg.index); });
+      strip.appendChild(tab);
+
+      var body = document.createElement("div");
+      body.className = "strip-body";
+
+      var times = document.createElement("div");
+      times.className = "times";
+      times.textContent = fmt(seg.start) + " — " + fmt(seg.end);
+      body.appendChild(times);
+
+      if (seg.frames.length) {
+        var grid = document.createElement("div");
+        grid.className = "frames";
+        seg.frames.forEach(function (src, i) {
+          var fig = document.createElement("figure");
+          var img = document.createElement("img");
+          img.src = src;
+          img.alt = "区間" + (seg.index + 1) + "の" + (LABELS[i] || i + 1) + "フレーム";
+          img.loading = "lazy";
+          var cap = document.createElement("figcaption");
+          cap.textContent = LABELS[i] || i + 1;
+          fig.appendChild(img);
+          fig.appendChild(cap);
+          grid.appendChild(fig);
+        });
+        grid.addEventListener("click", function () { setActive(seg.index); });
+        body.appendChild(grid);
+      } else {
+        var pending = document.createElement("div");
+        pending.className = "frames pending";
+        pending.textContent = "コマを抽出中…";
+        body.appendChild(pending);
+      }
+
+      var note = document.createElement("textarea");
+      note.className = "note" + (seg.note ? " filled" : "");
+      note.value = seg.note;
+      note.placeholder = "この区間の解説メモ（Claude の返答を貼り付け）";
+      note.setAttribute("aria-label", "区間 " + (seg.index + 1) + " のメモ");
+      note.addEventListener("input", function () {
+        seg.note = note.value;
+        note.classList.toggle("filled", !!note.value.trim());
+        saveNote(seg.index, note.value);
+      });
+      body.appendChild(note);
+
+      strip.appendChild(body);
+      host.appendChild(strip);
+    });
+  }
+
+  function renderNow() {
+    var node = el("now");
+    if (state.active === null) {
+      node.textContent = "区間をタップするとループ再生します";
+      return;
+    }
+    var seg = state.segments[state.active];
+    node.innerHTML =
+      "<b>区間 " + (seg.index + 1) + "</b> をループ中 " + fmt(seg.start) + " — " + fmt(seg.end);
+    var stop = document.createElement("button");
+    stop.type = "button";
+    stop.className = "linkish";
+    stop.textContent = "解除";
+    stop.addEventListener("click", function () { setActive(null); });
+    node.appendChild(stop);
+  }
+
+  function renderMeta() {
+    el("meta").textContent = state.duration
+      ? state.duration.toFixed(1) + "秒 / " + state.segments.length + "区間"
+      : "";
+  }
+
+  /* ---------- 再生 ---------- */
+
+  function setActive(index) {
+    state.active = index;
+    var video = el("video");
+    if (index !== null) {
+      var seg = state.segments[index];
+      video.currentTime = seg.start;
+      video.playbackRate = state.rate;
+      var p = video.play();
+      if (p && p.catch) p.catch(function () {});
+    }
+    renderStrips();
+    renderNow();
+  }
+
+  function loopTick() {
+    var video = el("video");
+    if (state.active !== null && !video.paused) {
+      var seg = state.segments[state.active];
+      if (seg && video.currentTime >= seg.end - 0.02) video.currentTime = seg.start;
+    }
+    requestAnimationFrame(loopTick);
+  }
+
+  /* ---------- コマ表 ---------- */
+
+  function loadImage(src) {
+    return new Promise(function (resolve, reject) {
+      var img = new Image();
+      img.onload = function () { resolve(img); };
+      img.onerror = function () { reject(new Error("コマの読み込みに失敗しました")); };
+      img.src = src;
+    });
+  }
+
+  function drawSheet(segments, sheetNo, sheetCount, sample) {
+    var fw = SHEET_FRAME_W;
+    var fh = Math.round(fw * (sample.naturalHeight / sample.naturalWidth));
+    var pad = 24, gap = 12, rowLabel = 30, capH = 20;
+    var rowH = rowLabel + fh + capH + gap;
+
+    var canvas = document.createElement("canvas");
+    canvas.width = pad * 2 + fw * 3 + gap * 2;
+    canvas.height = pad * 2 + 54 + segments.length * rowH + 26;
+
+    var ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = "#111111";
+    ctx.font = "bold 24px sans-serif";
+    ctx.textBaseline = "top";
+    var title = "ダンス コマ表 — " + state.fileName;
+    if (sheetCount > 1) title += "（" + sheetNo + "/" + sheetCount + "）";
+    ctx.fillText(title, pad, pad);
+
+    ctx.fillStyle = "#666666";
+    ctx.font = "15px sans-serif";
+    ctx.fillText("区切り " + state.interval + "秒 / 各行は左から 開始・中間・終了", pad, pad + 30);
+
+    var y = pad + 54;
+
+    segments.forEach(function (item) {
+      var seg = item.seg;
+
+      ctx.fillStyle = "#111111";
+      ctx.font = "bold 19px sans-serif";
+      ctx.fillText("区間 " + (seg.index + 1), pad, y + 4);
+
+      ctx.fillStyle = "#666666";
+      ctx.font = "15px monospace";
+      ctx.fillText(fmt(seg.start) + " — " + fmt(seg.end), pad + 96, y + 6);
+
+      var top = y + rowLabel;
+      item.images.forEach(function (img, i) {
+        var x = pad + i * (fw + gap);
+        ctx.drawImage(img, x, top, fw, fh);
+        ctx.strokeStyle = "#dddddd";
+        ctx.lineWidth = 1;
+        ctx.strokeRect(x + 0.5, top + 0.5, fw - 1, fh - 1);
+
+        ctx.fillStyle = "#888888";
+        ctx.font = "14px sans-serif";
+        ctx.fillText(LABELS[i] || String(i + 1), x, top + fh + 3);
+      });
+
+      y += rowH;
+    });
+
+    ctx.fillStyle = "#888888";
+    ctx.font = "14px sans-serif";
+    ctx.fillText("この画像を Claude に貼り、区間ごとの解説を依頼してください。", pad, y + 2);
+
+    return canvas;
+  }
+
+  var sheetBlobs = [];
+
+  function makeSheets() {
+    var ready = state.segments.filter(function (s) { return s.frames.length === 3; });
+    if (!ready.length) { setError("先にコマの抽出が終わるのを待ってください。"); return; }
+
+    setError("");
+    setStatus("コマ表を作成中…");
+    sheetBlobs = [];
+
+    var all = [];
+    ready.forEach(function (seg) {
+      seg.frames.forEach(function (src) { all.push(loadImage(src)); });
+    });
+
+    Promise.all(all).then(function (images) {
+      var items = ready.map(function (seg, i) {
+        return { seg: seg, images: images.slice(i * 3, i * 3 + 3) };
+      });
+
+      var chunks = [];
+      for (var i = 0; i < items.length; i += PER_SHEET) chunks.push(items.slice(i, i + PER_SHEET));
+
+      var host = el("sheets");
+      host.textContent = "";
+
+      var jobs = chunks.map(function (chunk, i) {
+        var canvas = drawSheet(chunk, i + 1, chunks.length, images[0]);
+        var img = document.createElement("img");
+        img.alt = "コマ表 " + (i + 1) + " / " + chunks.length + "（長押しで保存できます）";
+        img.src = canvas.toDataURL("image/jpeg", 0.86);
+        host.appendChild(img);
+
+        return new Promise(function (resolve) {
+          canvas.toBlob(function (blob) { resolve(blob); }, "image/jpeg", 0.86);
+        });
+      });
+
+      return Promise.all(jobs).then(function (blobs) {
+        sheetBlobs = blobs;
+        show(el("handoff"), true);
+        el("handoffMeta").textContent =
+          chunks.length > 1 ? chunks.length + "枚に分割しました" : "";
+        setStatus("");
+        el("handoff").scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    }).catch(function (e) {
+      setStatus("");
+      setError(e && e.message ? e.message : "コマ表を作れませんでした。");
+    });
+  }
+
+  /* ---------- 解説の一括振り分け ---------- */
+
+  function applyPaste() {
+    var text = el("paste").value;
+    var lines = text.split(/\r?\n/);
+    var buckets = {};
+    var current = null;
+
+    lines.forEach(function (line) {
+      var m = line.match(/^\s*(?:区間|セグメント)?\s*(\d{1,3})\s*(?:[:：.、）)]|$)\s*(.*)$/);
+      if (m && (/区間|セグメント/.test(line) || /^\s*\d{1,3}\s*[:：.、）)]\s*$/.test(line))) {
+        current = parseInt(m[1], 10) - 1;
+        buckets[current] = m[2] ? [m[2]] : [];
+        return;
+      }
+      if (current !== null && buckets[current]) buckets[current].push(line);
+    });
+
+    var applied = 0;
+    Object.keys(buckets).forEach(function (key) {
+      var i = parseInt(key, 10);
+      var seg = state.segments[i];
+      if (!seg) return;
+      seg.note = buckets[key].join("\n").trim();
+      saveNote(i, seg.note);
+      applied += 1;
+    });
+
+    renderStrips();
+    el("pasteMeta").textContent = applied
+      ? applied + "区間に振り分けました"
+      : "「区間1」のような行が見つかりませんでした";
+  }
+
+  /* ---------- スライス ---------- */
+
+  function slice() {
+    if (!state.url || !state.duration || state.busy) return;
+
+    state.busy = true;
+    state.active = null;
+    state.segments = buildSegments(state.duration, state.interval);
+
+    var saved = loadNotes();
+    state.segments.forEach(function (seg) { seg.note = saved[seg.index] || ""; });
+
+    setError("");
+    show(el("handoff"), false);
+    renderStrips();
+    renderNow();
+    renderMeta();
+    setStatus("コマを抽出中… 0 / " + state.segments.length * 3);
+
+    extractFrames(state.url, state.segments, function (done, total) {
+      setStatus("コマを抽出中… " + done + " / " + total);
+    }).then(function (frames) {
+      state.segments.forEach(function (seg, i) { seg.frames = frames[i] || []; });
+      setStatus("");
+      renderStrips();
+    }).catch(function (e) {
+      setStatus("");
+      setError(e && e.message ? e.message : "コマの抽出に失敗しました。");
+    }).then(function () {
+      state.busy = false;
+    });
+  }
+
+  /* ---------- 入力 ---------- */
+
+  function openFile(file) {
+    if (!file) return;
+    if (!/^video\//.test(file.type)) {
+      var fe = el("fileErr");
+      fe.textContent = "動画ファイル（mp4 など）を選んでください。";
+      show(fe, true);
+      return;
+    }
+    show(el("fileErr"), false);
+
+    if (state.url) URL.revokeObjectURL(state.url);
+    state.url = URL.createObjectURL(file);
+    state.fileName = file.name;
+    state.duration = 0;
+    state.segments = [];
+    state.active = null;
+
+    var video = el("video");
+    video.src = state.url;
+    video.playbackRate = state.rate;
+
+    show(el("drop"), false);
+    show(el("stage"), true);
+  }
+
+  /* ---------- 配線 ---------- */
+
+  el("drop").addEventListener("click", function () { el("file").click(); });
+  el("file").addEventListener("change", function (e) { openFile(e.target.files[0]); });
+
+  ["dragenter", "dragover"].forEach(function (type) {
+    el("drop").addEventListener(type, function (e) {
+      e.preventDefault();
+      el("drop").classList.add("is-over");
+    });
+  });
+  ["dragleave", "drop"].forEach(function (type) {
+    el("drop").addEventListener(type, function (e) {
+      e.preventDefault();
+      el("drop").classList.remove("is-over");
+      if (type === "drop" && e.dataTransfer) openFile(e.dataTransfer.files[0]);
+    });
+  });
+
+  el("video").addEventListener("loadedmetadata", function (e) {
+    state.duration = e.target.duration;
+    slice();
+  });
+
+  Array.prototype.forEach.call(document.querySelectorAll(".rate"), function (btn) {
+    btn.addEventListener("click", function () {
+      state.rate = parseFloat(btn.getAttribute("data-rate"));
+      el("video").playbackRate = state.rate;
+      Array.prototype.forEach.call(document.querySelectorAll(".rate"), function (b) {
+        b.setAttribute("aria-pressed", String(b === btn));
+      });
+    });
+  });
+
+  el("mirror").addEventListener("click", function () {
+    state.mirrored = !state.mirrored;
+    el("video").style.transform = state.mirrored ? "scaleX(-1)" : "";
+    el("mirror").setAttribute("aria-pressed", String(state.mirrored));
+  });
+
+  el("reslice").addEventListener("click", function () {
+    var value = parseFloat(el("interval").value);
+    if (!isFinite(value) || value < 0.5 || value > 30) {
+      setError("区切りは 0.5 〜 30 秒で指定してください。");
+      return;
+    }
+    state.interval = value;
+    slice();
+  });
+
+  el("makeSheet").addEventListener("click", makeSheets);
+  el("applyPaste").addEventListener("click", applyPaste);
+
+  el("copyPrompt").addEventListener("click", function () {
+    var btn = el("copyPrompt");
+    navigator.clipboard.writeText(PROMPT).then(function () {
+      btn.textContent = "コピーしました";
+      setTimeout(function () { btn.textContent = "依頼文をコピー"; }, 1800);
+    }).catch(function () {
+      btn.textContent = "コピーできませんでした";
+      setTimeout(function () { btn.textContent = "依頼文をコピー"; }, 1800);
+    });
+  });
+
+  el("saveSheet").addEventListener("click", function () {
+    if (!sheetBlobs.length) return;
+    if (!window.claude || !window.claude.downloads) {
+      el("handoffMeta").textContent = "この画面では書き出せません。画像を長押しして保存してください。";
+      return;
+    }
+
+    var i = 0;
+    function next() {
+      if (i >= sheetBlobs.length) {
+        el("handoffMeta").textContent = "書き出しました";
+        return;
+      }
+      var name = sheetBlobs.length > 1
+        ? "koma-" + (i + 1) + ".jpg"
+        : "koma.jpg";
+      window.claude.downloads.save({ filename: name, data: sheetBlobs[i] })
+        .then(function () { i += 1; next(); })
+        .catch(function (err) {
+          var code = err && err.code;
+          el("handoffMeta").textContent = code === "declined"
+            ? "書き出しをキャンセルしました"
+            : "書き出せませんでした。画像を長押しして保存してください。";
+        });
+    }
+    next();
+  });
+
+  el("saveSheet").disabled = !(window.claude && window.claude.downloads);
+
+  el("reset").addEventListener("click", function () {
+    if (state.url) URL.revokeObjectURL(state.url);
+    state.url = null;
+    state.segments = [];
+    state.active = null;
+    state.duration = 0;
+    el("video").removeAttribute("src");
+    el("video").load();
+    show(el("stage"), false);
+    show(el("drop"), true);
+    show(el("handoff"), false);
+    setStatus("");
+    setError("");
+  });
+
+  requestAnimationFrame(loopTick);
+</script>
