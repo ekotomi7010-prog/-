@@ -16,12 +16,12 @@
     --ink-2: #4c565f;
     --ink-3: #7b858e;
 
-    /* gaffer tape — marks the count you are working on */
+    /* gaffer tape — いま見ているカウントの色 */
     --tape: #c47b18;
     --tape-ink: #ffffff;
     --tape-wash: #c47b1815;
 
-    /* mirror light — structure, timecodes, links */
+    /* mirror light — 構造・時刻・リンク */
     --mirror: #2f7c92;
 
     --good: #2f7d52;
@@ -31,6 +31,21 @@
     --sans: "Helvetica Neue", Helvetica, "Hiragino Sans", "Hiragino Kaku Gothic ProN",
       "Noto Sans JP", "Yu Gothic", Meiryo, sans-serif;
     --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Roboto Mono", monospace;
+
+    /* ステージの高さ配分。コマを選ぶと上下で分け合う */
+    --main-h: 54vh;
+    --main-h: 54dvh;
+    --still-h: 0px;
+
+    /* サムネイルの縦横比。動画を読み込んだ時点で実際の比率に差し替える */
+    --thumb-ar: 16 / 9;
+  }
+
+  :root.split {
+    --main-h: 38vh;
+    --main-h: 38dvh;
+    --still-h: 30vh;
+    --still-h: 30dvh;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -40,23 +55,18 @@
       --surface-2: #212933;
       --line: #313b47;
       --line-soft: #262f3a;
-
       --ink: #e7ebf0;
       --ink-2: #a3aeb9;
       --ink-3: #6e7a86;
-
       --tape: #d9963c;
       --tape-ink: #1a1206;
       --tape-wash: #d9963c1f;
-
       --mirror: #6aa7b8;
-
       --good: #6fbf8b;
       --bad: #e0685f;
     }
   }
 
-  /* viewer toggle must win in both directions */
   :root[data-theme="dark"] {
     --ground: #10141a;
     --surface: #181e26;
@@ -104,28 +114,15 @@
     -webkit-text-size-adjust: 100%;
   }
 
-  .wrap {
-    max-width: 1180px;
-    margin: 0 auto;
-    padding: 20px 16px 80px;
-  }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 14px 72px; }
 
-  .masthead { padding: 8px 0 20px; }
-
-  .masthead h1 {
-    margin: 0;
-    font-size: 22px;
-    font-weight: 700;
-    letter-spacing: 0.02em;
-    text-wrap: balance;
-  }
-
-  .masthead p {
-    margin: 6px 0 0;
-    color: var(--ink-2);
-    font-size: 13.5px;
-    line-height: 1.6;
-  }
+  .masthead { padding: 16px 0 14px; }
+  .masthead h1 { margin: 0; font-size: 20px; font-weight: 700; letter-spacing: 0.02em; text-wrap: balance; }
+  .masthead p { margin: 6px 0 0; color: var(--ink-2); font-size: 13.5px; line-height: 1.6; }
+  .masthead.compact { padding: 10px 0 8px; }
+  .masthead.compact p { display: none; }
+  .masthead.compact h1 { font-size: 15px; color: var(--ink-2); font-weight: 600; }
+  .masthead.compact .eyebrow { display: none; }
 
   .eyebrow {
     font-family: var(--mono);
@@ -138,49 +135,24 @@
 
   /* ---------- drop zone ---------- */
   .drop {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    padding: 52px 20px;
-    border: 2px dashed var(--line);
-    border-radius: var(--radius);
-    background: var(--surface);
-    color: var(--ink);
-    text-align: center;
-    cursor: pointer;
-    width: 100%;
-    font: inherit;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 6px; padding: 52px 20px;
+    border: 2px dashed var(--line); border-radius: var(--radius);
+    background: var(--surface); color: var(--ink);
+    text-align: center; cursor: pointer; width: 100%; font: inherit;
     transition: border-color 0.15s, background 0.15s;
   }
-
   .drop:hover, .drop:focus-visible { border-color: var(--tape); }
   .drop.is-over { border-color: var(--tape); background: var(--tape-wash); }
   .drop strong { font-size: 17px; font-weight: 700; }
   .drop span { color: var(--ink-3); font-size: 13px; }
 
-  /* ---------- layout ---------- */
-  .stage { display: grid; gap: 20px; }
-
-  @media (min-width: 900px) {
-    .stage { grid-template-columns: minmax(0, 420px) minmax(0, 1fr); align-items: start; }
-  }
-
-  .player-col {
-    position: sticky;
-    top: 0;
-    z-index: 5;
+  /* ---------- ステージ（上：動画／下：選んだコマ） ---------- */
+  .viewer {
+    position: sticky; top: 0; z-index: 20;
     background: var(--ground);
-    padding: 8px 0 12px;
-    margin: 0 -16px;
-    padding-left: 16px;
-    padding-right: 16px;
+    margin: 0 -14px; padding: 6px 14px 8px;
     border-bottom: 1px solid var(--line-soft);
-  }
-
-  @media (min-width: 900px) {
-    .player-col { margin: 0; padding-left: 0; padding-right: 0; border-bottom: 0; top: 16px; }
   }
 
   .screen {
@@ -188,318 +160,247 @@
     border: 1px solid var(--line);
     border-radius: var(--radius);
     overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
     line-height: 0;
   }
 
-  .screen video { width: 100%; max-height: 46vh; display: block; }
+  .screen video {
+    max-width: 100%;
+    max-height: var(--main-h);
+    width: auto; height: auto;
+    display: block;
+  }
 
-  @media (min-width: 900px) {
-    .screen video { max-height: 60vh; }
+  .still {
+    margin-top: 6px;
+    border: 1px solid var(--tape);
+    border-radius: var(--radius);
+    background: #000;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .still-head {
+    position: absolute; top: 0; left: 0; right: 0;
+    display: flex; align-items: center; gap: 8px;
+    padding: 5px 8px;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.72), rgba(0,0,0,0));
+    z-index: 2;
+  }
+
+  .still-head .who {
+    font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.04em;
+    color: #fff; font-variant-numeric: tabular-nums;
+  }
+  .still-head .who b { color: var(--tape); }
+
+  .still-close {
+    margin-left: auto; border: 0; background: rgba(255,255,255,0.16);
+    color: #fff; border-radius: 6px; padding: 3px 9px; font-size: 12px; line-height: 1.5;
+  }
+
+  .still-body { display: flex; align-items: center; justify-content: center; }
+
+  .still img {
+    max-width: 100%; max-height: var(--still-h);
+    width: auto; height: auto; display: block;
   }
 
   /* ---------- controls ---------- */
-  .controls {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    align-items: center;
-    margin-top: 10px;
-  }
+  .controls { display: flex; flex-wrap: wrap; gap: 7px; align-items: center; margin-top: 7px; }
 
   .seg-toggle {
-    display: inline-flex;
-    align-items: center;
-    gap: 2px;
-    padding: 3px;
-    border: 1px solid var(--line);
-    border-radius: 8px;
-    background: var(--surface);
+    display: inline-flex; align-items: center; gap: 2px; padding: 3px;
+    border: 1px solid var(--line); border-radius: 8px; background: var(--surface);
   }
-
   .seg-toggle .lbl {
-    font-family: var(--mono);
-    font-size: 10.5px;
-    letter-spacing: 0.12em;
-    color: var(--ink-3);
-    padding: 0 7px 0 5px;
-    text-transform: uppercase;
+    font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.12em;
+    color: var(--ink-3); padding: 0 6px 0 5px; text-transform: uppercase;
   }
 
-  button {
-    font: inherit;
-    color: inherit;
-    cursor: pointer;
-  }
+  button { font: inherit; color: inherit; cursor: pointer; }
 
   .rate {
-    border: 0;
-    background: transparent;
-    color: var(--ink-2);
-    font-family: var(--mono);
-    font-size: 13px;
-    padding: 5px 10px;
-    border-radius: 6px;
-    min-height: 34px;
+    border: 0; background: transparent; color: var(--ink-2);
+    font-family: var(--mono); font-size: 13px; padding: 4px 9px;
+    border-radius: 6px; min-height: 32px;
   }
-
   .rate[aria-pressed="true"] { background: var(--tape); color: var(--tape-ink); font-weight: 700; }
 
   .btn {
-    border: 1px solid var(--line);
-    background: var(--surface);
-    border-radius: 8px;
-    padding: 8px 13px;
-    font-size: 13.5px;
-    min-height: 40px;
+    border: 1px solid var(--line); background: var(--surface);
+    border-radius: 8px; padding: 7px 12px; font-size: 13.5px; min-height: 38px;
     transition: border-color 0.15s, background 0.15s;
   }
-
   .btn:hover { border-color: var(--ink-3); }
   .btn[aria-pressed="true"] { background: var(--tape); color: var(--tape-ink); border-color: var(--tape); font-weight: 700; }
   .btn.primary { background: var(--tape); color: var(--tape-ink); border-color: var(--tape); font-weight: 700; }
   .btn.primary:hover { filter: brightness(1.07); }
+  .btn.small { padding: 5px 10px; min-height: 32px; font-size: 12.5px; }
   .btn:disabled { opacity: 0.42; cursor: not-allowed; }
 
   :focus-visible { outline: 2px solid var(--mirror); outline-offset: 2px; }
 
   .now {
-    font-family: var(--mono);
-    font-size: 12px;
-    color: var(--ink-2);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
+    font-family: var(--mono); font-size: 11.5px; color: var(--ink-2);
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 6px 0 0;
   }
-
   .now b { color: var(--tape); }
 
   .linkish {
-    background: none;
-    border: 0;
-    padding: 4px 2px;
-    color: var(--mirror);
-    text-decoration: underline;
-    text-underline-offset: 3px;
-    font-size: 12px;
+    background: none; border: 0; padding: 3px 2px; color: var(--mirror);
+    text-decoration: underline; text-underline-offset: 3px; font-size: 12px;
   }
 
-  /* ---------- settings bar ---------- */
-  .bar {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    align-items: flex-end;
-    padding: 14px;
-    border: 1px solid var(--line-soft);
-    border-radius: var(--radius);
-    background: var(--surface);
+  /* ---------- モード切替と設定 ---------- */
+  .panel {
+    border: 1px solid var(--line-soft); border-radius: var(--radius);
+    background: var(--surface); padding: 13px;
+    display: flex; flex-direction: column; gap: 11px;
   }
+
+  .panel h2 { margin: 0; font-size: 14.5px; font-weight: 700; letter-spacing: 0.01em; }
+
+  .modes { display: flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+  .modes button {
+    flex: 1; border: 0; background: var(--surface); color: var(--ink-2);
+    padding: 9px 8px; font-size: 13.5px; min-height: 42px;
+  }
+  .modes button + button { border-left: 1px solid var(--line); }
+  .modes button[aria-pressed="true"] { background: var(--tape); color: var(--tape-ink); font-weight: 700; }
 
   .field { display: flex; flex-direction: column; gap: 4px; }
-
   .field label {
-    font-family: var(--mono);
-    font-size: 10.5px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--ink-3);
+    font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--ink-3);
   }
 
   input[type="number"], textarea {
-    font: inherit;
-    color: var(--ink);
-    background: var(--ground);
-    border: 1px solid var(--line);
-    border-radius: 8px;
-    padding: 9px 11px;
+    font: inherit; color: var(--ink); background: var(--ground);
+    border: 1px solid var(--line); border-radius: 8px; padding: 9px 11px;
   }
-
-  input[type="number"] { width: 92px; font-family: var(--mono); min-height: 40px; }
+  input[type="number"] { width: 96px; font-family: var(--mono); min-height: 40px; }
   input[type="number"]:focus, textarea:focus { border-color: var(--mirror); outline: none; }
 
+  input[type="range"] { width: 100%; accent-color: var(--tape); min-height: 34px; }
+
+  .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .row.end { align-items: flex-end; }
+
   .meta {
-    font-family: var(--mono);
-    font-size: 11.5px;
-    color: var(--ink-3);
+    font-family: var(--mono); font-size: 11.5px; color: var(--ink-3);
     font-variant-numeric: tabular-nums;
   }
 
-  .notice { font-size: 13px; color: var(--ink-2); }
-  .notice.err { color: var(--bad); }
+  .bpm-readout { font-family: var(--mono); display: flex; align-items: baseline; gap: 6px; }
+  .bpm-readout .val {
+    font-size: 27px; font-weight: 700; color: var(--tape); line-height: 1.1;
+    font-variant-numeric: tabular-nums;
+  }
+  .bpm-readout .unit { font-size: 11px; letter-spacing: 0.14em; color: var(--ink-3); }
 
-  /* ---------- segment strips ---------- */
-  .strips { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
+  .notice { font-size: 13px; color: var(--ink-2); margin: 0; }
+  .notice.err { color: var(--bad); }
+  .notice.ok { color: var(--good); }
+
+  /* ---------- 区間ストリップ ---------- */
+  .strips { display: flex; flex-direction: column; gap: 9px; }
 
   .strip {
-    display: grid;
-    grid-template-columns: 44px minmax(0, 1fr);
-    border: 1px solid var(--line-soft);
-    border-radius: var(--radius);
-    background: var(--surface);
-    overflow: hidden;
+    display: grid; grid-template-columns: 46px minmax(0, 1fr);
+    border: 1px solid var(--line-soft); border-radius: var(--radius);
+    background: var(--surface); overflow: hidden;
   }
-
   .strip.is-active { border-color: var(--tape); background: var(--tape-wash); }
 
   .tab {
-    background: var(--surface-2);
-    border: 0;
-    border-right: 1px solid var(--line-soft);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 3px;
-    padding: 10px 2px;
-    font-family: var(--mono);
-    color: var(--ink-2);
+    background: var(--surface-2); border: 0; border-right: 1px solid var(--line-soft);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 2px; padding: 10px 2px; font-family: var(--mono); color: var(--ink-2);
   }
-
   .strip.is-active .tab { background: var(--tape); color: var(--tape-ink); border-right-color: var(--tape); }
   .tab .n { font-size: 17px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .tab .unit { font-size: 8.5px; letter-spacing: 0.06em; opacity: 0.8; }
   .tab .play { font-size: 9px; letter-spacing: 0.1em; opacity: 0.75; }
 
-  .strip-body { padding: 10px 12px 12px; min-width: 0; }
+  .strip-body { padding: 9px 11px 11px; min-width: 0; }
 
   .times {
-    font-family: var(--mono);
-    font-size: 11.5px;
-    color: var(--ink-3);
-    font-variant-numeric: tabular-nums;
-    display: flex;
-    gap: 10px;
-    align-items: center;
-    flex-wrap: wrap;
+    font-family: var(--mono); font-size: 11.5px; color: var(--ink-3);
+    font-variant-numeric: tabular-nums; display: flex; gap: 9px; align-items: center; flex-wrap: wrap;
   }
 
   .frames {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 6px;
-    margin: 8px 0 10px;
-    max-width: 420px;
+    display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px; margin: 8px 0 10px; max-width: 430px;
   }
-
   .frames figure { margin: 0; }
 
+  .frame-btn { display: block; width: 100%; padding: 0; border: 0; background: none; cursor: pointer; }
+
   .frames img {
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    object-fit: cover;
-    border-radius: 6px;
-    border: 1px solid var(--line);
-    background: var(--ground);
-    display: block;
+    width: 100%; aspect-ratio: var(--thumb-ar);
+    /* 縦型でも全身が切れないように、切り抜かず収める */
+    object-fit: contain;
+    border-radius: 6px; border: 1px solid var(--line);
+    background: #000; display: block;
+    transition: border-color 0.12s;
   }
+  .frame-btn:hover img { border-color: var(--ink-3); }
+  .frame-btn.is-picked img { border-color: var(--tape); border-width: 2px; }
 
   .frames figcaption {
-    font-family: var(--mono);
-    font-size: 9.5px;
-    letter-spacing: 0.1em;
-    color: var(--ink-3);
-    text-align: center;
-    margin-top: 3px;
+    font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.08em;
+    color: var(--ink-3); text-align: center; margin-top: 3px;
   }
+  .frames figure.picked figcaption { color: var(--tape); font-weight: 700; }
 
   .frames.pending {
-    height: 62px;
-    border: 1px dashed var(--line);
-    border-radius: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    color: var(--ink-3);
+    height: 60px; border: 1px dashed var(--line); border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; color: var(--ink-3);
   }
 
-  .note {
-    width: 100%;
-    min-height: 78px;
-    resize: vertical;
-    font-size: 14px;
-    line-height: 1.75;
-  }
-
+  .note { width: 100%; min-height: 72px; resize: vertical; font-size: 14px; line-height: 1.75; }
   .note::placeholder { color: var(--ink-3); }
   .note.filled { border-color: var(--good); }
 
-  /* ---------- sheet / handoff ---------- */
-  .panel {
-    border: 1px solid var(--line-soft);
-    border-radius: var(--radius);
-    background: var(--surface);
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .panel h2 {
-    margin: 0;
-    font-size: 15px;
-    font-weight: 700;
-    letter-spacing: 0.01em;
-  }
-
+  /* ---------- 受け渡し ---------- */
   .steps {
-    margin: 0;
-    padding-left: 0;
-    list-style: none;
-    counter-reset: step;
-    display: flex;
-    flex-direction: column;
-    gap: 7px;
+    margin: 0; padding-left: 0; list-style: none; counter-reset: step;
+    display: flex; flex-direction: column; gap: 6px;
   }
-
   .steps li {
-    counter-increment: step;
-    display: grid;
-    grid-template-columns: 24px minmax(0, 1fr);
-    gap: 9px;
-    font-size: 13.5px;
-    color: var(--ink-2);
-    line-height: 1.65;
+    counter-increment: step; display: grid; grid-template-columns: 22px minmax(0, 1fr);
+    gap: 9px; font-size: 13.5px; color: var(--ink-2); line-height: 1.65;
   }
-
   .steps li::before {
     content: counter(step);
-    font-family: var(--mono);
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--mirror);
-    border: 1px solid var(--mirror);
-    border-radius: 50%;
-    width: 21px;
-    height: 21px;
-    display: grid;
-    place-items: center;
-    margin-top: 1px;
+    font-family: var(--mono); font-size: 11px; font-weight: 700;
+    color: var(--mirror); border: 1px solid var(--mirror); border-radius: 50%;
+    width: 20px; height: 20px; display: grid; place-items: center; margin-top: 2px;
   }
 
   .sheets { display: flex; flex-direction: column; gap: 12px; }
-
-  .sheets img {
-    width: 100%;
-    border: 1px solid var(--line);
-    border-radius: 8px;
-    display: block;
-    background: #fff;
-  }
+  .sheets img { width: 100%; border: 1px solid var(--line); border-radius: 8px; display: block; background: #fff; }
 
   .hint { font-size: 12px; color: var(--ink-3); margin: 0; }
-  .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 
-  details summary {
-    cursor: pointer;
-    font-size: 13.5px;
-    color: var(--mirror);
-    padding: 4px 0;
-  }
+  details summary { cursor: pointer; font-size: 13.5px; color: var(--mirror); padding: 4px 0; }
+  .paste { width: 100%; min-height: 116px; margin-top: 8px; font-size: 13.5px; }
 
-  .paste { width: 100%; min-height: 120px; margin-top: 8px; font-size: 13.5px; }
+  .scroller { display: flex; flex-direction: column; gap: 14px; padding-top: 14px; }
+
   .hidden { display: none !important; }
   .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+
+  @media (min-width: 900px) {
+    :root { --main-h: 56vh; --main-h: 56dvh; }
+    :root.split { --main-h: 42vh; --main-h: 42dvh; --still-h: 34vh; --still-h: 34dvh; }
+    .stage { display: grid; grid-template-columns: minmax(0, 440px) minmax(0, 1fr); gap: 22px; align-items: start; }
+    .viewer { margin: 0; padding: 0; border-bottom: 0; top: 14px; }
+    .scroller { padding-top: 0; }
+  }
 
   @media (prefers-reduced-motion: reduce) {
     * { transition: none !important; animation: none !important; }
@@ -507,26 +408,36 @@
 </style>
 
 <div class="wrap">
-  <header class="masthead">
+  <header class="masthead" id="masthead">
     <p class="eyebrow">Rehearsal / count sheet</p>
     <h1>ダンス コマ割りラボ</h1>
     <p>
-      動画を秒数で区切って、区間ごとにコマを並べ、その区間だけをループ再生します。
-      解説はコマ表を Claude に渡して受け取り、ここに書き戻します。APIキーは要りません。
+      動画を秒数か8カウントで区切り、区間ごとにコマを並べます。コマをタップすると下半分に大きく出て、
+      動画もその瞬間で止まります。解説はコマ表を Claude に渡して受け取ります。APIキーは要りません。
     </p>
   </header>
 
   <button class="drop" id="drop" type="button">
     <strong>動画を選ぶ</strong>
-    <span>タップして選択、または動画をドロップ（mp4 / 10秒前後）</span>
+    <span>タップして選択、または動画をドロップ</span>
   </button>
   <input id="file" class="sr" type="file" accept="video/*">
   <p class="notice err hidden" id="fileErr"></p>
 
   <div class="stage hidden" id="stage">
-    <div class="player-col">
+    <div class="viewer">
       <div class="screen">
         <video id="video" playsinline muted controls></video>
+      </div>
+
+      <div class="still hidden" id="still">
+        <div class="still-head">
+          <span class="who" id="stillWho"></span>
+          <button class="still-close" id="stillClose" type="button">閉じる</button>
+        </div>
+        <div class="still-body">
+          <img id="stillImg" alt="選択中のコマ">
+        </div>
       </div>
 
       <div class="controls">
@@ -539,24 +450,58 @@
         <button class="btn" id="mirror" type="button" aria-pressed="false">左右反転</button>
       </div>
 
-      <div class="controls">
-        <p class="now" id="now">区間をタップするとループ再生します</p>
-      </div>
+      <p class="now" id="now">番号をタップでループ再生、コマをタップでその瞬間を拡大</p>
     </div>
 
-    <div class="stage-col" style="display:flex; flex-direction:column; gap:16px; min-width:0;">
-      <div class="bar">
-        <div class="field">
-          <label for="interval">区切り（秒）</label>
-          <input id="interval" type="number" min="0.5" max="30" step="0.5" value="2">
+    <div class="scroller">
+      <section class="panel">
+        <div class="modes" role="group" aria-label="区切り方">
+          <button type="button" id="modeSec" aria-pressed="true">秒数で区切る</button>
+          <button type="button" id="modeBeat" aria-pressed="false">8カウントで区切る</button>
         </div>
-        <button class="btn" id="reslice" type="button">区切り直す</button>
-        <button class="btn primary" id="makeSheet" type="button">コマ表を作る</button>
-        <span class="meta" id="meta"></span>
-      </div>
 
-      <p class="notice hidden" id="status"></p>
-      <p class="notice err hidden" id="err"></p>
+        <div class="row end" id="secPane">
+          <div class="field">
+            <label for="interval">区切り（秒）</label>
+            <input id="interval" type="number" min="0.5" max="30" step="0.5" value="2">
+          </div>
+          <button class="btn" id="reslice" type="button">区切り直す</button>
+        </div>
+
+        <div class="hidden" id="beatPane">
+          <div class="row end" style="margin-bottom:11px;">
+            <div class="bpm-readout">
+              <span class="val" id="bpmVal">—</span>
+              <span class="unit">BPM</span>
+            </div>
+            <span class="meta" id="beatMeta"></span>
+          </div>
+
+          <div class="row" style="margin-bottom:11px;">
+            <button class="btn small" id="detectBpm" type="button">音から検出</button>
+            <button class="btn small" id="tapBpm" type="button">タップでテンポ</button>
+            <label class="sr" for="bpmInput">BPMを手入力</label>
+            <input id="bpmInput" type="number" min="40" max="220" step="0.5" placeholder="手入力">
+            <button class="btn small" id="applyBpm" type="button">反映</button>
+          </div>
+
+          <p class="notice hidden" id="bpmNote" style="margin-bottom:11px;"></p>
+
+          <div class="field">
+            <label for="offset">開始オフセット（小節の頭を合わせる）</label>
+            <input id="offset" type="range" min="0" max="1" step="0.005" value="0">
+            <span class="meta" id="offsetMeta">0.00 秒ずらす</span>
+          </div>
+        </div>
+
+        <div class="row">
+          <button class="btn primary" id="makeSheet" type="button">コマ表を作る</button>
+          <span class="meta" id="meta"></span>
+        </div>
+
+        <p class="notice hidden" id="status"></p>
+        <p class="notice err hidden" id="err"></p>
+      </section>
 
       <div class="strips" id="strips"></div>
 
@@ -579,7 +524,7 @@
         <details>
           <summary>解説をまとめて貼り付ける</summary>
           <p class="hint" style="margin-top:8px;">
-            「区間1」「区間2」… で始まるまとまりごとに、対応するメモ欄へ振り分けます。
+            「区間1」「1エイト」のように番号で始まるまとまりごとに、対応するメモ欄へ振り分けます。
           </p>
           <textarea class="paste" id="paste" placeholder="区間1&#10;体の向き: …&#10;&#10;区間2&#10;体の向き: …"></textarea>
           <div class="row" style="margin-top:8px;">
@@ -599,30 +544,26 @@
 <script>
   "use strict";
 
-  var FRAME_W = 480;          // 抽出するフレームの横幅
-  var SHEET_FRAME_W = 400;    // コマ表に描くときの横幅
-  var PER_SHEET = 6;          // コマ表1枚あたりの区間数
-  var LABELS = ["開始", "中間", "終了"];
-
-  var PROMPT =
-    "添付はダンス動画のコマ表です。各行が1つの区間で、左から「開始・中間・終了」の3枚が並んでいます。\n\n" +
-    "区間ごとに、次の見出しで日本語の解説を書いてください。\n\n" +
-    "体の向き:\n足のステップ:\n腕・手の動き:\n頭・目線:\nコツ:\n\n" +
-    "ルール:\n" +
-    "- 振り付けの正式名称は無理に当てず、見たままを言語化してください。\n" +
-    "- 画像から判断できない項目は「判別しづらい」とだけ書いてください。\n" +
-    "- 「コツ」は、その区間を練習するときに意識することを一言で。\n" +
-    "- 各区間の先頭に「区間1」のように番号だけの行を置いてください（貼り戻しに使います）。";
+  var FRAME_W = 480;
+  var SHEET_FRAME_W = 400;
+  var PER_SHEET = 6;
+  var SEC_LABELS = ["開始", "中間", "終了"];
+  var BEAT_LABELS = ["カウント1", "カウント5", "カウント8"];
 
   var el = function (id) { return document.getElementById(id); };
 
   var state = {
     url: null,
+    file: null,
     fileName: "",
     duration: 0,
+    mode: "sec",          // "sec" | "beat"
     interval: 2,
+    bpm: null,
+    offset: 0,
     segments: [],
-    active: null,
+    active: null,         // ループ中の区間
+    picked: null,         // { seg, frame } 停止して拡大中のコマ
     rate: 1,
     mirrored: false,
     busy: false
@@ -633,21 +574,27 @@
   function fmt(sec) {
     var m = Math.floor(sec / 60);
     var s = (sec - m * 60).toFixed(1);
-    // 9.97 → "10.0" のように繰り上がるので、丸めた後の文字列で桁を判定する
     if (parseFloat(s) >= 60) { m += 1; s = "0.0"; }
     return m + ":" + (s.length < 4 ? "0" + s : s);
   }
 
+  function frameLabels() { return state.mode === "beat" ? BEAT_LABELS : SEC_LABELS; }
+
+  function segLabel(index) {
+    return state.mode === "beat" ? (index + 1) + "エイト" : "区間 " + (index + 1);
+  }
+
+  function eightLength() { return state.bpm ? (60 / state.bpm) * 8 : 0; }
+
   function notesKey() {
-    return "dance-lab:" + state.fileName + ":" + state.interval;
+    var slice = state.mode === "beat"
+      ? "beat:" + (state.bpm || 0).toFixed(2) + ":" + state.offset.toFixed(3)
+      : "sec:" + state.interval;
+    return "dance-lab:" + state.fileName + ":" + slice;
   }
 
   function loadNotes() {
-    try {
-      return JSON.parse(localStorage.getItem(notesKey()) || "{}");
-    } catch (e) {
-      return {};
-    }
+    try { return JSON.parse(localStorage.getItem(notesKey()) || "{}"); } catch (e) { return {}; }
   }
 
   function saveNote(index, text) {
@@ -672,18 +619,48 @@
     show(node, !!text);
   }
 
+  function setBpmNote(text, isError) {
+    var node = el("bpmNote");
+    node.textContent = text || "";
+    node.classList.toggle("err", !!isError);
+    node.classList.toggle("ok", !isError && !!text);
+    show(node, !!text);
+  }
+
   /* ---------- 区間の組み立て ---------- */
 
-  function buildSegments(duration, interval) {
+  function buildSegments() {
     var out = [];
-    var count = Math.max(1, Math.ceil(duration / interval));
-    for (var i = 0; i < count; i++) {
-      var start = i * interval;
-      var end = Math.min(duration, start + interval);
-      if (end - start < 0.2 && out.length > 0) break;
-      out.push({ index: i, start: start, end: end, frames: [], note: "" });
+    var duration = state.duration;
+
+    if (state.mode === "beat") {
+      var len = eightLength();
+      if (!len) return out;
+      var start = state.offset;
+      var i = 0;
+      while (start < duration - 0.2 && i < 400) {
+        out.push({ index: i, start: start, end: Math.min(duration, start + len), frames: [], note: "" });
+        start += len;
+        i += 1;
+      }
+      return out;
+    }
+
+    var count = Math.max(1, Math.ceil(duration / state.interval));
+    for (var k = 0; k < count; k++) {
+      var s = k * state.interval;
+      var e = Math.min(duration, s + state.interval);
+      if (e - s < 0.2 && out.length > 0) break;
+      out.push({ index: k, start: s, end: e, frames: [], note: "" });
     }
     return out;
+  }
+
+  /* 3枚のコマを撮る時刻。8カウントなら カウント1 / 5 / 8 の位置にあたる */
+  function frameTimes(seg, duration) {
+    var span = seg.end - seg.start;
+    var last = Math.max(seg.start, Math.min(seg.end, duration) - 0.05);
+    return [seg.start, seg.start + span / 2, last];
   }
 
   /* ---------- フレーム抽出 ---------- */
@@ -740,7 +717,7 @@
     return loadOffscreenVideo(url)
       .then(function (v) {
         video = v;
-        // iOS Safari は一度再生しないとフレームが黒くなることがある
+        // iOS Safari は一度再生しないとコマが黒くなることがある
         return video.play().then(function () { video.pause(); }).catch(function () {});
       })
       .then(function () {
@@ -757,12 +734,10 @@
         var result = [];
 
         segments.forEach(function (seg) {
-          var mid = (seg.start + seg.end) / 2;
-          var last = Math.max(seg.start, Math.min(seg.end, duration) - 0.05);
           var frames = [];
           result.push(frames);
 
-          [seg.start, mid, last].forEach(function (t) {
+          frameTimes(seg, duration).forEach(function (t) {
             chain = chain.then(function () {
               return seek(video, Math.max(0, Math.min(t, duration - 0.01)));
             }).then(function () {
@@ -782,10 +757,158 @@
       });
   }
 
+  /* ---------- BPM 検出（ブラウザ内で完結。外部APIは使わない） ---------- */
+
+  function decodeAudio(file) {
+    var AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return Promise.reject(new Error("このブラウザは音声解析に対応していません。"));
+
+    return file.arrayBuffer().then(function (buf) {
+      var ac = new AC();
+      return new Promise(function (resolve, reject) {
+        var failed = function () { reject(new Error("この動画から音声を取り出せませんでした。")); };
+        // Safari 系は Promise を返さないことがあるのでコールバック版も渡す
+        var maybe = ac.decodeAudioData(buf, resolve, failed);
+        if (maybe && maybe.then) maybe.then(resolve, failed);
+      }).then(function (audio) {
+        if (ac.close) ac.close();
+        return audio;
+      });
+    });
+  }
+
+  function renderKickBand(audio) {
+    var OAC = window.OfflineAudioContext || window.webkitOfflineAudioContext;
+    if (!OAC) return Promise.reject(new Error("このブラウザは音声解析に対応していません。"));
+
+    var rate = audio.sampleRate;
+    var length = Math.min(audio.length, Math.floor(rate * 30)); // 30秒ぶんで十分
+    var off = new OAC(1, length, rate);
+
+    var src = off.createBufferSource();
+    src.buffer = audio;
+
+    // キックの帯域だけ残す
+    var low = off.createBiquadFilter();
+    low.type = "lowpass"; low.frequency.value = 150; low.Q.value = 1;
+    var high = off.createBiquadFilter();
+    high.type = "highpass"; high.frequency.value = 40; high.Q.value = 1;
+
+    src.connect(low); low.connect(high); high.connect(off.destination);
+    src.start(0);
+    return off.startRendering();
+  }
+
+  function bpmFromRendered(rendered) {
+    var data = rendered.getChannelData(0);
+    var rate = rendered.sampleRate;
+
+    var peak = 0;
+    for (var i = 0; i < data.length; i++) {
+      var a = data[i] < 0 ? -data[i] : data[i];
+      if (a > peak) peak = a;
+    }
+    if (peak < 1e-4) throw new Error("音が小さすぎて拍を取れませんでした。");
+
+    // しきい値を下げながら、十分な数のアタックを拾う
+    var peaks = [];
+    var gap = Math.floor(rate * 0.24); // 最速 250 BPM 相当
+    for (var th = 0.92; th >= 0.2 && peaks.length < 30; th -= 0.06) {
+      peaks = [];
+      var limit = th * peak;
+      for (var j = 0; j < data.length; j++) {
+        var v = data[j] < 0 ? -data[j] : data[j];
+        if (v > limit) { peaks.push(j); j += gap; }
+      }
+    }
+    if (peaks.length < 6) throw new Error("拍をうまく拾えませんでした。手入力かタップをお使いください。");
+
+    // 拍の間隔を BPM に直し、オクターブを畳んで多数決
+    var tally = {};
+    for (var p = 0; p < peaks.length; p++) {
+      for (var q = 1; q <= 10 && p + q < peaks.length; q++) {
+        var seconds = (peaks[p + q] - peaks[p]) / rate;
+        if (seconds <= 0) continue;
+        var bpm = 60 / seconds;
+        while (bpm < 80) bpm *= 2;
+        while (bpm > 170) bpm /= 2;
+        if (bpm < 80 || bpm > 170) continue;
+        var key = Math.round(bpm);
+        tally[key] = (tally[key] || 0) + 1;
+      }
+    }
+
+    var best = null, bestCount = 0;
+    Object.keys(tally).forEach(function (k) {
+      if (tally[k] > bestCount) { bestCount = tally[k]; best = parseInt(k, 10); }
+    });
+    if (best === null) throw new Error("テンポを判定できませんでした。手入力かタップをお使いください。");
+
+    // 近い値をまとめて重心を取り、少しだけ精度を上げる
+    var sum = 0, weight = 0;
+    for (var d = -2; d <= 2; d++) {
+      var c = tally[best + d] || 0;
+      sum += (best + d) * c;
+      weight += c;
+    }
+    return Math.round((sum / weight) * 10) / 10;
+  }
+
+  function detectBpmFromFile(file) {
+    return decodeAudio(file).then(function (audio) {
+      if (!audio || !audio.length) throw new Error("この動画には音声が入っていないようです。");
+      return renderKickBand(audio);
+    }).then(bpmFromRendered);
+  }
+
+  /* ---------- タップテンポ ---------- */
+
+  var taps = [];
+
+  function onTap() {
+    var now = performance.now();
+    if (taps.length && now - taps[taps.length - 1] > 2500) taps = [];
+    taps.push(now);
+    if (taps.length > 8) taps.shift();
+
+    if (taps.length < 2) {
+      setBpmNote("拍に合わせて、あと数回タップしてください…", false);
+      return;
+    }
+    var span = taps[taps.length - 1] - taps[0];
+    var bpm = 60000 / (span / (taps.length - 1));
+    if (bpm < 40 || bpm > 220) {
+      setBpmNote("テンポの範囲外です。もう一度どうぞ。", true);
+      return;
+    }
+    applyBpm(Math.round(bpm * 10) / 10);
+    setBpmNote(taps.length + "回のタップから割り出しました。", false);
+  }
+
+  /* ---------- BPM の反映 ---------- */
+
+  function applyBpm(bpm) {
+    state.bpm = bpm;
+    el("bpmVal").textContent = String(bpm).replace(/\.0$/, "");
+
+    var len = eightLength();
+    el("beatMeta").textContent = "1エイト = " + len.toFixed(2) + "秒";
+
+    // オフセットは1エイトぶん動かせれば頭は合う
+    var slider = el("offset");
+    slider.max = len.toFixed(3);
+    if (state.offset > len) state.offset = 0;
+    slider.value = state.offset;
+    el("offsetMeta").textContent = state.offset.toFixed(2) + " 秒ずらす";
+
+    if (state.mode === "beat") slice();
+  }
+
   /* ---------- 描画 ---------- */
 
   function renderStrips() {
     var host = el("strips");
+    var labels = frameLabels();
     host.textContent = "";
 
     state.segments.forEach(function (seg) {
@@ -795,11 +918,12 @@
       var tab = document.createElement("button");
       tab.type = "button";
       tab.className = "tab";
-      tab.setAttribute("aria-label", "区間 " + (seg.index + 1) + " をループ再生");
+      tab.setAttribute("aria-label", segLabel(seg.index) + " をループ再生");
       tab.innerHTML =
         '<span class="n">' + (seg.index + 1) + "</span>" +
+        (state.mode === "beat" ? '<span class="unit">エイト</span>' : "") +
         '<span class="play">' + (state.active === seg.index ? "LOOP" : "▶") + "</span>";
-      tab.addEventListener("click", function () { setActive(seg.index); });
+      tab.addEventListener("click", function () { toggleLoop(seg.index); });
       strip.appendChild(tab);
 
       var body = document.createElement("div");
@@ -814,18 +938,30 @@
         var grid = document.createElement("div");
         grid.className = "frames";
         seg.frames.forEach(function (src, i) {
+          var picked = !!(state.picked && state.picked.seg === seg.index && state.picked.frame === i);
+
           var fig = document.createElement("figure");
+          if (picked) fig.className = "picked";
+
+          var btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "frame-btn" + (picked ? " is-picked" : "");
+          btn.setAttribute("aria-pressed", String(picked));
+
           var img = document.createElement("img");
           img.src = src;
-          img.alt = "区間" + (seg.index + 1) + "の" + (LABELS[i] || i + 1) + "フレーム";
+          img.alt = segLabel(seg.index) + "の" + (labels[i] || i + 1) + "のコマ";
           img.loading = "lazy";
+          btn.appendChild(img);
+          btn.addEventListener("click", function () { pickFrame(seg.index, i); });
+
           var cap = document.createElement("figcaption");
-          cap.textContent = LABELS[i] || i + 1;
-          fig.appendChild(img);
+          cap.textContent = labels[i] || i + 1;
+
+          fig.appendChild(btn);
           fig.appendChild(cap);
           grid.appendChild(fig);
         });
-        grid.addEventListener("click", function () { setActive(seg.index); });
         body.appendChild(grid);
       } else {
         var pending = document.createElement("div");
@@ -838,7 +974,7 @@
       note.className = "note" + (seg.note ? " filled" : "");
       note.value = seg.note;
       note.placeholder = "この区間の解説メモ（Claude の返答を貼り付け）";
-      note.setAttribute("aria-label", "区間 " + (seg.index + 1) + " のメモ");
+      note.setAttribute("aria-label", segLabel(seg.index) + " のメモ");
       note.addEventListener("input", function () {
         seg.note = note.value;
         note.classList.toggle("filled", !!note.value.trim());
@@ -853,40 +989,116 @@
 
   function renderNow() {
     var node = el("now");
-    if (state.active === null) {
-      node.textContent = "区間をタップするとループ再生します";
+    node.textContent = "";
+
+    if (state.picked) {
+      var seg = state.segments[state.picked.seg];
+      if (seg) {
+        var labels = frameLabels();
+        var t = frameTimes(seg, state.duration)[state.picked.frame];
+        var b = document.createElement("b");
+        b.textContent = segLabel(seg.index);
+        node.appendChild(b);
+        node.appendChild(document.createTextNode(
+          " " + (labels[state.picked.frame] || "") + " で停止中 " + fmt(t)
+        ));
+        return;
+      }
+    }
+
+    if (state.active !== null && state.segments[state.active]) {
+      var s = state.segments[state.active];
+      var bb = document.createElement("b");
+      bb.textContent = segLabel(s.index);
+      node.appendChild(bb);
+      node.appendChild(document.createTextNode(" をループ中 " + fmt(s.start) + " — " + fmt(s.end) + " "));
+      var stop = document.createElement("button");
+      stop.type = "button";
+      stop.className = "linkish";
+      stop.textContent = "解除";
+      stop.addEventListener("click", function () { toggleLoop(null); });
+      node.appendChild(stop);
       return;
     }
-    var seg = state.segments[state.active];
-    node.innerHTML =
-      "<b>区間 " + (seg.index + 1) + "</b> をループ中 " + fmt(seg.start) + " — " + fmt(seg.end);
-    var stop = document.createElement("button");
-    stop.type = "button";
-    stop.className = "linkish";
-    stop.textContent = "解除";
-    stop.addEventListener("click", function () { setActive(null); });
-    node.appendChild(stop);
+
+    node.textContent = "番号をタップでループ再生、コマをタップでその瞬間を拡大";
   }
 
   function renderMeta() {
+    var unit = state.mode === "beat" ? "エイト" : "区間";
     el("meta").textContent = state.duration
-      ? state.duration.toFixed(1) + "秒 / " + state.segments.length + "区間"
+      ? state.duration.toFixed(1) + "秒 / " + state.segments.length + unit
       : "";
   }
 
-  /* ---------- 再生 ---------- */
+  function renderStill() {
+    var root = document.documentElement;
+    var seg = state.picked ? state.segments[state.picked.seg] : null;
 
-  function setActive(index) {
+    if (!seg || !seg.frames[state.picked.frame]) {
+      show(el("still"), false);
+      root.classList.remove("split");
+      return;
+    }
+
+    var labels = frameLabels();
+    el("stillImg").src = seg.frames[state.picked.frame];
+    el("stillImg").style.transform = state.mirrored ? "scaleX(-1)" : "";
+    el("stillWho").textContent = "";
+
+    var b = document.createElement("b");
+    b.textContent = segLabel(seg.index);
+    el("stillWho").appendChild(b);
+    el("stillWho").appendChild(
+      document.createTextNode(" " + (labels[state.picked.frame] || ""))
+    );
+
+    show(el("still"), true);
+    root.classList.add("split");
+  }
+
+  /* ---------- 再生・選択 ---------- */
+
+  function toggleLoop(index) {
+    if (index !== null && state.active === index) index = null;
     state.active = index;
+
     var video = el("video");
     if (index !== null) {
+      state.picked = null;            // ループに入ったら静止表示は畳む
       var seg = state.segments[index];
       video.currentTime = seg.start;
       video.playbackRate = state.rate;
       var p = video.play();
       if (p && p.catch) p.catch(function () {});
+    } else {
+      video.pause();
     }
+
     renderStrips();
+    renderStill();
+    renderNow();
+  }
+
+  function pickFrame(segIndex, frameIndex) {
+    var seg = state.segments[segIndex];
+    if (!seg) return;
+
+    // 同じコマをもう一度押したら解除
+    if (state.picked && state.picked.seg === segIndex && state.picked.frame === frameIndex) {
+      state.picked = null;
+    } else {
+      state.active = null;            // 再生はせず、その瞬間で止める
+      state.picked = { seg: segIndex, frame: frameIndex };
+
+      var video = el("video");
+      video.pause();
+      var t = frameTimes(seg, state.duration)[frameIndex];
+      video.currentTime = Math.max(0, Math.min(t, state.duration - 0.01));
+    }
+
+    renderStrips();
+    renderStill();
     renderNow();
   }
 
@@ -910,7 +1122,16 @@
     });
   }
 
-  function drawSheet(segments, sheetNo, sheetCount, sample) {
+  function bpmText() { return String(state.bpm || "").replace(/\.0$/, ""); }
+
+  function sliceCaption() {
+    return state.mode === "beat"
+      ? "8カウント区切り / BPM " + bpmText() + " / 各行は左から カウント1・5・8"
+      : "区切り " + state.interval + "秒 / 各行は左から 開始・中間・終了";
+  }
+
+  function drawSheet(items, sheetNo, sheetCount, sample) {
+    var labels = frameLabels();
     var fw = SHEET_FRAME_W;
     var fh = Math.round(fw * (sample.naturalHeight / sample.naturalWidth));
     var pad = 24, gap = 12, rowLabel = 30, capH = 20;
@@ -918,7 +1139,7 @@
 
     var canvas = document.createElement("canvas");
     canvas.width = pad * 2 + fw * 3 + gap * 2;
-    canvas.height = pad * 2 + 54 + segments.length * rowH + 26;
+    canvas.height = pad * 2 + 54 + items.length * rowH + 26;
 
     var ctx = canvas.getContext("2d");
     ctx.fillStyle = "#ffffff";
@@ -933,11 +1154,11 @@
 
     ctx.fillStyle = "#666666";
     ctx.font = "15px sans-serif";
-    ctx.fillText("区切り " + state.interval + "秒 / 各行は左から 開始・中間・終了", pad, pad + 30);
+    ctx.fillText(sliceCaption(), pad, pad + 30);
 
     var y = pad + 54;
 
-    segments.forEach(function (item) {
+    items.forEach(function (item) {
       var seg = item.seg;
 
       ctx.fillStyle = "#111111";
@@ -946,7 +1167,9 @@
 
       ctx.fillStyle = "#666666";
       ctx.font = "15px monospace";
-      ctx.fillText(fmt(seg.start) + " — " + fmt(seg.end), pad + 96, y + 6);
+      var sub = fmt(seg.start) + " — " + fmt(seg.end);
+      if (state.mode === "beat") sub = (seg.index + 1) + "エイト   " + sub;
+      ctx.fillText(sub, pad + 96, y + 6);
 
       var top = y + rowLabel;
       item.images.forEach(function (img, i) {
@@ -958,7 +1181,7 @@
 
         ctx.fillStyle = "#888888";
         ctx.font = "14px sans-serif";
-        ctx.fillText(LABELS[i] || String(i + 1), x, top + fh + 3);
+        ctx.fillText(labels[i] || String(i + 1), x, top + fh + 3);
       });
 
       y += rowH;
@@ -972,6 +1195,21 @@
   }
 
   var sheetBlobs = [];
+
+  function buildPrompt() {
+    return "添付はダンス動画のコマ表です。各行が1つの区間で、左から「" +
+      frameLabels().join("・") + "」の3枚が並んでいます。\n" +
+      (state.mode === "beat"
+        ? "区切りは音楽の8カウント単位（BPM " + bpmText() + "）です。\n"
+        : "区切りは" + state.interval + "秒ごとです。\n") +
+      "\n区間ごとに、次の見出しで日本語の解説を書いてください。\n\n" +
+      "体の向き:\n足のステップ:\n腕・手の動き:\n頭・目線:\nコツ:\n\n" +
+      "ルール:\n" +
+      "- 振り付けの正式名称は無理に当てず、見たままを言語化してください。\n" +
+      "- 画像から判断できない項目は「判別しづらい」とだけ書いてください。\n" +
+      "- 「コツ」は、その区間を練習するときに意識することを一言で。\n" +
+      "- 各区間の先頭に「区間1」のように番号だけの行を置いてください（貼り戻しに使います）。";
+  }
 
   function makeSheets() {
     var ready = state.segments.filter(function (s) { return s.frames.length === 3; });
@@ -991,8 +1229,12 @@
         return { seg: seg, images: images.slice(i * 3, i * 3 + 3) };
       });
 
+      // 縦型のコマは1行が高くなるので、1枚あたりの行数を減らして縦長になりすぎないようにする
+      var sample = images[0];
+      var perSheet = sample.naturalHeight > sample.naturalWidth ? 3 : PER_SHEET;
+
       var chunks = [];
-      for (var i = 0; i < items.length; i += PER_SHEET) chunks.push(items.slice(i, i + PER_SHEET));
+      for (var i = 0; i < items.length; i += perSheet) chunks.push(items.slice(i, i + perSheet));
 
       var host = el("sheets");
       host.textContent = "";
@@ -1003,7 +1245,6 @@
         img.alt = "コマ表 " + (i + 1) + " / " + chunks.length + "（長押しで保存できます）";
         img.src = canvas.toDataURL("image/jpeg", 0.86);
         host.appendChild(img);
-
         return new Promise(function (resolve) {
           canvas.toBlob(function (blob) { resolve(blob); }, "image/jpeg", 0.86);
         });
@@ -1012,8 +1253,7 @@
       return Promise.all(jobs).then(function (blobs) {
         sheetBlobs = blobs;
         show(el("handoff"), true);
-        el("handoffMeta").textContent =
-          chunks.length > 1 ? chunks.length + "枚に分割しました" : "";
+        el("handoffMeta").textContent = chunks.length > 1 ? chunks.length + "枚に分割しました" : "";
         setStatus("");
         el("handoff").scrollIntoView({ behavior: "smooth", block: "start" });
       });
@@ -1026,16 +1266,19 @@
   /* ---------- 解説の一括振り分け ---------- */
 
   function applyPaste() {
-    var text = el("paste").value;
-    var lines = text.split(/\r?\n/);
+    var lines = el("paste").value.split(/\r?\n/);
     var buckets = {};
     var current = null;
 
     lines.forEach(function (line) {
-      var m = line.match(/^\s*(?:区間|セグメント)?\s*(\d{1,3})\s*(?:[:：.、）)]|$)\s*(.*)$/);
-      if (m && (/区間|セグメント/.test(line) || /^\s*\d{1,3}\s*[:：.、）)]\s*$/.test(line))) {
-        current = parseInt(m[1], 10) - 1;
-        buckets[current] = m[2] ? [m[2]] : [];
+      var head = line.match(/^\s*(?:区間|セグメント)?\s*(\d{1,3})\s*(?:エイト)?\s*[:：.、）)]?\s*(.*)$/);
+      var looksLikeHead = head && (
+        /区間|セグメント|エイト/.test(line) ||
+        /^\s*\d{1,3}\s*[:：.、）)]\s*$/.test(line)
+      );
+      if (looksLikeHead) {
+        current = parseInt(head[1], 10) - 1;
+        buckets[current] = head[2] ? [head[2]] : [];
         return;
       }
       if (current !== null && buckets[current]) buckets[current].push(line);
@@ -1061,10 +1304,15 @@
 
   function slice() {
     if (!state.url || !state.duration || state.busy) return;
+    if (state.mode === "beat" && !state.bpm) {
+      setError("先に BPM を決めてください（検出・タップ・手入力のどれでも）。");
+      return;
+    }
 
     state.busy = true;
     state.active = null;
-    state.segments = buildSegments(state.duration, state.interval);
+    state.picked = null;
+    state.segments = buildSegments();
 
     var saved = loadNotes();
     state.segments.forEach(function (seg) { seg.note = saved[seg.index] || ""; });
@@ -1072,6 +1320,7 @@
     setError("");
     show(el("handoff"), false);
     renderStrips();
+    renderStill();
     renderNow();
     renderMeta();
     setStatus("コマを抽出中… 0 / " + state.segments.length * 3);
@@ -1090,6 +1339,24 @@
     });
   }
 
+  /* ---------- モード切替 ---------- */
+
+  function setMode(mode) {
+    state.mode = mode;
+    el("modeSec").setAttribute("aria-pressed", String(mode === "sec"));
+    el("modeBeat").setAttribute("aria-pressed", String(mode === "beat"));
+    show(el("secPane"), mode === "sec");
+    show(el("beatPane"), mode === "beat");
+    setError("");
+
+    if (mode === "beat" && !state.bpm) {
+      setBpmNote("「音から検出」を押すか、タップ・手入力でテンポを決めてください。", false);
+      renderMeta();
+      return;
+    }
+    slice();
+  }
+
   /* ---------- 入力 ---------- */
 
   function openFile(file) {
@@ -1104,15 +1371,23 @@
 
     if (state.url) URL.revokeObjectURL(state.url);
     state.url = URL.createObjectURL(file);
+    state.file = file;
     state.fileName = file.name;
     state.duration = 0;
     state.segments = [];
     state.active = null;
+    state.picked = null;
+    state.bpm = null;
+    taps = [];
+    el("bpmVal").textContent = "—";
+    el("beatMeta").textContent = "";
+    setBpmNote("", false);
 
     var video = el("video");
     video.src = state.url;
     video.playbackRate = state.rate;
 
+    el("masthead").classList.add("compact");
     show(el("drop"), false);
     show(el("stage"), true);
   }
@@ -1138,6 +1413,14 @@
 
   el("video").addEventListener("loadedmetadata", function (e) {
     state.duration = e.target.duration;
+
+    // サムネイルの枠を動画の形に合わせる（縦型なら縦長の枠にする）
+    var w = e.target.videoWidth, h = e.target.videoHeight;
+    if (w && h) {
+      var ar = Math.min(Math.max(w / h, 0.62), 1.78);
+      document.documentElement.style.setProperty("--thumb-ar", String(ar));
+    }
+
     slice();
   });
 
@@ -1154,8 +1437,19 @@
   el("mirror").addEventListener("click", function () {
     state.mirrored = !state.mirrored;
     el("video").style.transform = state.mirrored ? "scaleX(-1)" : "";
+    el("stillImg").style.transform = state.mirrored ? "scaleX(-1)" : "";
     el("mirror").setAttribute("aria-pressed", String(state.mirrored));
   });
+
+  el("stillClose").addEventListener("click", function () {
+    state.picked = null;
+    renderStrips();
+    renderStill();
+    renderNow();
+  });
+
+  el("modeSec").addEventListener("click", function () { setMode("sec"); });
+  el("modeBeat").addEventListener("click", function () { setMode("beat"); });
 
   el("reslice").addEventListener("click", function () {
     var value = parseFloat(el("interval").value);
@@ -1167,12 +1461,51 @@
     slice();
   });
 
+  el("detectBpm").addEventListener("click", function () {
+    if (!state.file) return;
+    var btn = el("detectBpm");
+    btn.disabled = true;
+    setBpmNote("音を解析しています…", false);
+
+    detectBpmFromFile(state.file).then(function (bpm) {
+      applyBpm(bpm);
+      setBpmNote("検出しました。頭がズレていたらオフセットで合わせてください。", false);
+    }).catch(function (e) {
+      setBpmNote(e && e.message ? e.message : "検出できませんでした。", true);
+    }).then(function () {
+      btn.disabled = false;
+    });
+  });
+
+  el("tapBpm").addEventListener("click", onTap);
+
+  el("applyBpm").addEventListener("click", function () {
+    var v = parseFloat(el("bpmInput").value);
+    if (!isFinite(v) || v < 40 || v > 220) {
+      setBpmNote("BPM は 40 〜 220 で入力してください。", true);
+      return;
+    }
+    applyBpm(Math.round(v * 10) / 10);
+    setBpmNote("手入力の BPM を反映しました。", false);
+  });
+
+  // つまみを動かしている間はラベルだけ更新し、離した時に抽出し直す
+  el("offset").addEventListener("input", function () {
+    state.offset = parseFloat(el("offset").value) || 0;
+    el("offsetMeta").textContent = state.offset.toFixed(2) + " 秒ずらす";
+  });
+  el("offset").addEventListener("change", function () {
+    state.offset = parseFloat(el("offset").value) || 0;
+    el("offsetMeta").textContent = state.offset.toFixed(2) + " 秒ずらす";
+    if (state.mode === "beat") slice();
+  });
+
   el("makeSheet").addEventListener("click", makeSheets);
   el("applyPaste").addEventListener("click", applyPaste);
 
   el("copyPrompt").addEventListener("click", function () {
     var btn = el("copyPrompt");
-    navigator.clipboard.writeText(PROMPT).then(function () {
+    navigator.clipboard.writeText(buildPrompt()).then(function () {
       btn.textContent = "コピーしました";
       setTimeout(function () { btn.textContent = "依頼文をコピー"; }, 1800);
     }).catch(function () {
@@ -1190,18 +1523,12 @@
 
     var i = 0;
     function next() {
-      if (i >= sheetBlobs.length) {
-        el("handoffMeta").textContent = "書き出しました";
-        return;
-      }
-      var name = sheetBlobs.length > 1
-        ? "koma-" + (i + 1) + ".jpg"
-        : "koma.jpg";
+      if (i >= sheetBlobs.length) { el("handoffMeta").textContent = "書き出しました"; return; }
+      var name = sheetBlobs.length > 1 ? "koma-" + (i + 1) + ".jpg" : "koma.jpg";
       window.claude.downloads.save({ filename: name, data: sheetBlobs[i] })
         .then(function () { i += 1; next(); })
         .catch(function (err) {
-          var code = err && err.code;
-          el("handoffMeta").textContent = code === "declined"
+          el("handoffMeta").textContent = (err && err.code) === "declined"
             ? "書き出しをキャンセルしました"
             : "書き出せませんでした。画像を長押しして保存してください。";
         });
@@ -1214,14 +1541,19 @@
   el("reset").addEventListener("click", function () {
     if (state.url) URL.revokeObjectURL(state.url);
     state.url = null;
+    state.file = null;
     state.segments = [];
     state.active = null;
+    state.picked = null;
     state.duration = 0;
     el("video").removeAttribute("src");
     el("video").load();
+    document.documentElement.classList.remove("split");
+    el("masthead").classList.remove("compact");
     show(el("stage"), false);
     show(el("drop"), true);
     show(el("handoff"), false);
+    show(el("still"), false);
     setStatus("");
     setError("");
   });
