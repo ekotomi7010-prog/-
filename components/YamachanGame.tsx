@@ -513,6 +513,31 @@ export default function YamachanGame() {
         ctx!.fill();
       }
 
+      // 遠景：荏田高等学校の校舎（パララックス、控えめに右へ流れる）
+      const buildT = (Date.now() / 1000 * 20) % (W + 400);
+      ctx!.save();
+      ctx!.globalAlpha = 0.85;
+      for (let i = -1; i < 2; i++) {
+        const bx = ((W + 400) - buildT + i * (W + 400)) % (W + 800) - 400;
+        ctx!.fillStyle = "#2c3446";
+        ctx!.fillRect(bx, GROUND_Y - 90, 220, 104);
+        ctx!.fillStyle = "#7fd1e0";
+        for (let r = 0; r < 3; r++) {
+          for (let c = 0; c < 6; c++) {
+            ctx!.fillRect(bx + 10 + c * 34, GROUND_Y - 78 + r * 28, 22, 16);
+          }
+        }
+        ctx!.fillStyle = "#e8e2c8";
+        ctx!.fillRect(bx + 60, GROUND_Y - 116, 100, 22);
+        ctx!.strokeStyle = "#8a8360";
+        ctx!.strokeRect(bx + 60, GROUND_Y - 116, 100, 22);
+        ctx!.fillStyle = "#2c3446";
+        ctx!.font = "bold 12px sans-serif";
+        ctx!.textAlign = "center";
+        ctx!.fillText("荏田高等学校", bx + 110, GROUND_Y - 100);
+      }
+      ctx!.restore();
+
       ctx!.fillStyle = "#25361f";
       ctx!.fillRect(0, GROUND_Y + 14, W, H - GROUND_Y - 14);
       ctx!.strokeStyle = "rgba(255,255,255,0.15)";
@@ -898,6 +923,7 @@ export default function YamachanGame() {
   return (
     <div className="flex flex-col items-center gap-4 py-8 px-4">
       <h1 className="text-2xl font-bold tracking-wide">山ちゃんが飛ぶ!!</h1>
+      <p className="text-xs text-gray-500">舞台：荏田高等学校</p>
       <p className="text-sm text-gray-400">
         押しっぱなし / タップ長押し / Space・↑キーで上昇。離すと落下します。
       </p>
@@ -911,9 +937,10 @@ export default function YamachanGame() {
 
         {mode === "title" && (
           <Overlay>
-            <h2 className="text-3xl font-bold mb-2">山ちゃんが飛ぶ!!</h2>
+            <h2 className="text-3xl font-bold mb-1">山ちゃんが飛ぶ!!</h2>
+            <p className="text-xs mb-2 text-gray-400">舞台：荏田高等学校</p>
             <p className="text-sm mb-6 text-gray-300">
-              ラスボス「フック」を目指して、ひたすら飛べ！
+              放課後の荏田高校の空を、ラスボス「フック」を目指してひたすら飛べ！
             </p>
             <button onClick={handleStart} className="btn-primary">
               スタート
