@@ -561,41 +561,168 @@ export default function YamachanGame() {
       ctx!.fillText(text, x, y);
     }
 
+    // 頭部の輪郭から生えるスパイク状の毛束を1本描く（髪型の作り分け用）
+    function drawSpike(cx: number, cy: number, r: number, angleDeg: number, length: number, width: number, color: string) {
+      const a = (angleDeg * Math.PI) / 180;
+      const bx = cx + Math.cos(a) * r;
+      const by = cy + Math.sin(a) * r;
+      const tipx = cx + Math.cos(a) * (r + length);
+      const tipy = cy + Math.sin(a) * (r + length);
+      const px = Math.cos(a + Math.PI / 2) * width;
+      const py = Math.sin(a + Math.PI / 2) * width;
+      ctx!.fillStyle = color;
+      ctx!.beginPath();
+      ctx!.moveTo(bx - px, by - py);
+      ctx!.lineTo(tipx, tipy);
+      ctx!.lineTo(bx + px, by + py);
+      ctx!.closePath();
+      ctx!.fill();
+    }
+
+    function drawFace(cx: number, cy: number, mood: "smile" | "neutral" | "open" | "angry" | "wink") {
+      ctx!.fillStyle = "#222";
+      if (mood === "wink") {
+        ctx!.beginPath();
+        ctx!.arc(cx - 4, cy, 1.3, 0, Math.PI * 2);
+        ctx!.fill();
+        ctx!.strokeStyle = "#222";
+        ctx!.lineWidth = 1.2;
+        ctx!.beginPath();
+        ctx!.moveTo(cx + 2, cy);
+        ctx!.lineTo(cx + 6, cy);
+        ctx!.stroke();
+      } else {
+        ctx!.beginPath();
+        ctx!.arc(cx - 4, cy, 1.3, 0, Math.PI * 2);
+        ctx!.arc(cx + 4, cy, 1.3, 0, Math.PI * 2);
+        ctx!.fill();
+      }
+      if (mood === "smile") {
+        ctx!.strokeStyle = "#7a4a2a";
+        ctx!.lineWidth = 1.3;
+        ctx!.beginPath();
+        ctx!.arc(cx, cy + 4, 5, 0.15 * Math.PI, 0.85 * Math.PI);
+        ctx!.stroke();
+      } else if (mood === "open") {
+        ctx!.fillStyle = "#7a3030";
+        ctx!.beginPath();
+        ctx!.ellipse(cx, cy + 6, 3, 4, 0, 0, Math.PI * 2);
+        ctx!.fill();
+      } else if (mood === "angry") {
+        ctx!.strokeStyle = "#7a4a2a";
+        ctx!.lineWidth = 1.6;
+        ctx!.beginPath();
+        ctx!.moveTo(cx - 4, cy + 6);
+        ctx!.lineTo(cx + 4, cy + 6);
+        ctx!.stroke();
+      } else {
+        ctx!.strokeStyle = "#7a4a2a";
+        ctx!.lineWidth = 1.3;
+        ctx!.beginPath();
+        ctx!.moveTo(cx - 3, cy + 5);
+        ctx!.lineTo(cx + 3, cy + 5);
+        ctx!.stroke();
+      }
+    }
+
     function drawYamachan(x: number, y: number, flash: boolean) {
       ctx!.save();
       ctx!.translate(x, y);
       const tilt = Math.max(-0.4, Math.min(0.4, stateRef.current.player.vy / 1400));
       ctx!.rotate(tilt);
       if (flash && Math.floor(Date.now() / 90) % 2 === 0) ctx!.globalAlpha = 0.4;
-      // 体（白タキシード）
+
+      // 燕尾服の裾（後ろに2枚）
+      ctx!.fillStyle = "#efe8cf";
+      ctx!.beginPath();
+      ctx!.moveTo(-9, 6);
+      ctx!.quadraticCurveTo(-13, 24, -6, 34);
+      ctx!.lineTo(-2, 14);
+      ctx!.closePath();
+      ctx!.fill();
+      ctx!.beginPath();
+      ctx!.moveTo(9, 6);
+      ctx!.quadraticCurveTo(13, 24, 6, 34);
+      ctx!.lineTo(2, 14);
+      ctx!.closePath();
+      ctx!.fill();
+
+      // 本体（クリーム色のタキシード）
       ctx!.fillStyle = "#f5f0dc";
       ctx!.beginPath();
-      ctx!.ellipse(0, 10, 16, 20, 0, 0, Math.PI * 2);
+      ctx!.ellipse(0, 8, 15, 18, 0, 0, Math.PI * 2);
       ctx!.fill();
       ctx!.strokeStyle = "#d8cfa0";
-      ctx!.lineWidth = 2;
+      ctx!.lineWidth = 1.5;
       ctx!.stroke();
+
+      // シャツの襟元
+      ctx!.fillStyle = "#fff";
+      ctx!.beginPath();
+      ctx!.moveTo(-5, -2);
+      ctx!.lineTo(0, 8);
+      ctx!.lineTo(5, -2);
+      ctx!.lineTo(0, -6);
+      ctx!.closePath();
+      ctx!.fill();
+
+      // 蝶ネクタイ
+      ctx!.fillStyle = "#1c1c1c";
+      ctx!.beginPath();
+      ctx!.moveTo(-4, -3);
+      ctx!.lineTo(-1, -1);
+      ctx!.lineTo(-4, 1);
+      ctx!.closePath();
+      ctx!.fill();
+      ctx!.beginPath();
+      ctx!.moveTo(4, -3);
+      ctx!.lineTo(1, -1);
+      ctx!.lineTo(4, 1);
+      ctx!.closePath();
+      ctx!.fill();
+      ctx!.fillRect(-1, -2, 2, 2);
+
+      // 胸元のブートニア（花）
+      ctx!.fillStyle = "#f6e27a";
+      ctx!.beginPath();
+      ctx!.arc(-9, 4, 2, 0, Math.PI * 2);
+      ctx!.fill();
+      ctx!.fillStyle = "#fff8e0";
+      ([[-11, 3], [-7, 3], [-9, 1]] as [number, number][]).forEach(([px, py]) => {
+        ctx!.beginPath();
+        ctx!.arc(px, py, 1.6, 0, Math.PI * 2);
+        ctx!.fill();
+      });
+
       // 顔
       ctx!.fillStyle = "#f2c49b";
       ctx!.beginPath();
-      ctx!.arc(0, -12, 13, 0, Math.PI * 2);
+      ctx!.arc(0, -12, 12, 0, Math.PI * 2);
       ctx!.fill();
-      // 髪
+
+      // 髪（黒髪の七三分け）
       ctx!.fillStyle = "#1c1c1c";
       ctx!.beginPath();
-      ctx!.arc(0, -18, 13, Math.PI, Math.PI * 2);
+      ctx!.arc(0, -17, 12.5, Math.PI, Math.PI * 2);
       ctx!.fill();
-      // 笑顔
-      ctx!.strokeStyle = "#7a4a2a";
-      ctx!.lineWidth = 1.5;
+      drawSpike(0, -17, 12, 250, 5, 2.2, "#1c1c1c");
+      drawSpike(0, -17, 12, 230, 3, 2, "#1c1c1c");
+      ctx!.strokeStyle = "#000";
+      ctx!.lineWidth = 1;
       ctx!.beginPath();
-      ctx!.arc(0, -8, 6, 0.15 * Math.PI, 0.85 * Math.PI);
+      ctx!.moveTo(-3, -25);
+      ctx!.lineTo(2, -19);
       ctx!.stroke();
-      ctx!.fillStyle = "#222";
+
+      drawFace(0, -12, "smile");
+
+      // 頬の赤み
+      ctx!.fillStyle = "rgba(255,150,150,0.35)";
       ctx!.beginPath();
-      ctx!.arc(-4, -14, 1.4, 0, Math.PI * 2);
-      ctx!.arc(4, -14, 1.4, 0, Math.PI * 2);
+      ctx!.arc(-7, -9, 2, 0, Math.PI * 2);
+      ctx!.arc(7, -9, 2, 0, Math.PI * 2);
       ctx!.fill();
+
       ctx!.restore();
     }
 
@@ -612,10 +739,16 @@ export default function YamachanGame() {
           ctx!.beginPath();
           ctx!.arc(0, -14, 12, 0, Math.PI * 2);
           ctx!.fill();
+          // 髪（激しめの寝癖）
           ctx!.fillStyle = "#2b2b2b";
           ctx!.beginPath();
           ctx!.arc(0, -19, 12, Math.PI, Math.PI * 2);
           ctx!.fill();
+          ([[200, 9, 2], [225, 13, 2.2], [255, 8, 2], [280, 14, 2.4], [315, 10, 2]] as [number, number, number][]).forEach(
+            ([ang, len, w]) => drawSpike(0, -19, 12, ang, len, w, "#2b2b2b")
+          );
+          drawFace(0, -14, "smile");
+          // バレーボール
           ctx!.fillStyle = "#ffcf5c";
           ctx!.beginPath();
           ctx!.arc(22, -6, 8, 0, Math.PI * 2);
@@ -625,33 +758,60 @@ export default function YamachanGame() {
           break;
         }
         case "ebi": {
-          ctx!.fillStyle = "#e8c34a";
-          ctx!.strokeStyle = "#c9a020";
-          ctx!.lineWidth = 4;
+          // 細い手足（がりがり）
+          ctx!.strokeStyle = "#f2c49b";
+          ctx!.lineWidth = 3;
           ctx!.beginPath();
-          ctx!.moveTo(0, -6);
-          ctx!.lineTo(0, 22);
+          ctx!.moveTo(-8, 4);
+          ctx!.lineTo(-15, -2);
+          ctx!.moveTo(8, 4);
+          ctx!.lineTo(15, 2);
           ctx!.stroke();
           ctx!.beginPath();
-          ctx!.moveTo(-8, 6);
-          ctx!.lineTo(8, 6);
+          ctx!.moveTo(-3, 22);
+          ctx!.lineTo(-6, 34);
+          ctx!.moveTo(3, 22);
+          ctx!.lineTo(6, 34);
           ctx!.stroke();
+          // ドラムスティック
+          ctx!.strokeStyle = "#c9a06a";
+          ctx!.lineWidth = 2.5;
           ctx!.beginPath();
-          ctx!.moveTo(0, 22);
-          ctx!.lineTo(-7, 34);
-          ctx!.moveTo(0, 22);
-          ctx!.lineTo(7, 34);
+          ctx!.moveTo(-15, -2);
+          ctx!.lineTo(-24, -10);
+          ctx!.moveTo(15, 2);
+          ctx!.lineTo(24, -6);
           ctx!.stroke();
+          // 細い胴体
+          ctx!.fillStyle = "#e78fb3";
+          ctx!.beginPath();
+          ctx!.ellipse(0, 8, 8, 16, 0, 0, Math.PI * 2);
+          ctx!.fill();
+          // 顔
           ctx!.fillStyle = "#f2c49b";
           ctx!.beginPath();
           ctx!.arc(0, -14, 10, 0, Math.PI * 2);
           ctx!.fill();
+          // 金髪（サイドに流したロングヘア）
           ctx!.fillStyle = "#e8c34a";
           ctx!.beginPath();
-          ctx!.arc(0, -19, 10, Math.PI, Math.PI * 2);
+          ctx!.arc(0, -19, 10.5, Math.PI, Math.PI * 2);
           ctx!.fill();
-          ctx!.fillRect(-14, -24, 5, 14);
-          ctx!.fillRect(9, -24, 5, 14);
+          ctx!.beginPath();
+          ctx!.moveTo(-10, -18);
+          ctx!.quadraticCurveTo(-13, -4, -9, 8);
+          ctx!.lineTo(-6, 6);
+          ctx!.quadraticCurveTo(-9, -6, -7, -18);
+          ctx!.closePath();
+          ctx!.fill();
+          ctx!.beginPath();
+          ctx!.moveTo(10, -18);
+          ctx!.quadraticCurveTo(13, -6, 8, 4);
+          ctx!.lineTo(6, 2);
+          ctx!.quadraticCurveTo(9, -8, 7, -18);
+          ctx!.closePath();
+          ctx!.fill();
+          drawFace(0, -14, "wink");
           label("エビちゃん", 0, -40);
           break;
         }
@@ -666,12 +826,22 @@ export default function YamachanGame() {
           ctx!.beginPath();
           ctx!.arc(0, -16, 11, 0, Math.PI * 2);
           ctx!.fill();
+          // 髪（センターの寝癖アホ毛つき）
+          ctx!.fillStyle = "#4a3218";
+          ctx!.beginPath();
+          ctx!.arc(0, -20, 11.5, Math.PI, Math.PI * 2);
+          ctx!.fill();
+          drawSpike(0, -20, 11, 270, 15, 2.6, "#4a3218");
+          drawSpike(0, -20, 11, 220, 8, 2, "#4a3218");
+          drawSpike(0, -20, 11, 320, 8, 2, "#4a3218");
+          // ギター
           ctx!.strokeStyle = "#5a3a1a";
           ctx!.lineWidth = 3;
           ctx!.beginPath();
           ctx!.moveTo(-20, 4);
           ctx!.lineTo(20, -2);
           ctx!.stroke();
+          drawFace(0, -16, "open");
           ctx!.restore();
           ctx!.save();
           ctx!.translate(ob.x, ob.y);
@@ -687,6 +857,14 @@ export default function YamachanGame() {
           ctx!.beginPath();
           ctx!.arc(0, -12, 10, 0, Math.PI * 2);
           ctx!.fill();
+          // 寝癖だらけの髪（鳥の巣）
+          ctx!.fillStyle = "#6b6f78";
+          ctx!.beginPath();
+          ctx!.arc(0, -16, 10.5, Math.PI, Math.PI * 2);
+          ctx!.fill();
+          ([[200, 6, 2], [225, 9, 1.8], [255, 5, 1.6], [285, 10, 2], [315, 6, 1.8], [340, 8, 1.8]] as [number, number, number][]).forEach(
+            ([ang, len, w]) => drawSpike(0, -16, 10, ang, len, w, "#6b6f78")
+          );
           // 鳥のようなくちばし
           ctx!.fillStyle = "#e0a030";
           ctx!.beginPath();
@@ -694,13 +872,16 @@ export default function YamachanGame() {
           ctx!.lineTo(22, -9);
           ctx!.lineTo(9, -6);
           ctx!.fill();
-          // メガネ
+          // メガネ（四角）
           ctx!.strokeStyle = "#222";
           ctx!.lineWidth = 1.5;
+          ctx!.strokeRect(-8, -15, 6, 6);
+          ctx!.strokeRect(2, -15, 6, 6);
           ctx!.beginPath();
-          ctx!.arc(-4, -12, 4, 0, Math.PI * 2);
-          ctx!.arc(4, -12, 4, 0, Math.PI * 2);
+          ctx!.moveTo(-2, -12);
+          ctx!.lineTo(2, -12);
           ctx!.stroke();
+          drawFace(0, -12, "angry");
           label("吉野", 0, -34);
           break;
         }
@@ -713,10 +894,19 @@ export default function YamachanGame() {
           ctx!.beginPath();
           ctx!.arc(0, -14, 11, 0, Math.PI * 2);
           ctx!.fill();
-          ctx!.fillStyle = "#5a3a1a";
+          // 髪（短め・七三分け）
+          ctx!.fillStyle = "#2a2a2a";
           ctx!.beginPath();
-          ctx!.arc(0, -19, 11, Math.PI, Math.PI * 2);
+          ctx!.arc(0, -19, 11.5, Math.PI, Math.PI * 2);
           ctx!.fill();
+          drawSpike(0, -19, 11, 255, 4, 2, "#2a2a2a");
+          ctx!.strokeStyle = "#000";
+          ctx!.lineWidth = 1;
+          ctx!.beginPath();
+          ctx!.moveTo(-2, -27);
+          ctx!.lineTo(3, -21);
+          ctx!.stroke();
+          drawFace(0, -14, "neutral");
           // 弁当箱
           ctx!.fillStyle = "#d6d6d6";
           ctx!.fillRect(14, 0, 14, 10);
@@ -775,37 +965,99 @@ export default function YamachanGame() {
       ctx!.save();
       ctx!.translate(b.x, b.y);
       if (flinch > 0) ctx!.translate(rand(-4, 4), rand(-4, 4));
+
+      // スーツの身体
       ctx!.fillStyle = enraged ? "#3a2030" : "#20232e";
       ctx!.beginPath();
-      ctx!.ellipse(0, 14, 26, 34, 0, 0, Math.PI * 2);
+      ctx!.ellipse(0, 14, 25, 34, 0, 0, Math.PI * 2);
       ctx!.fill();
-      ctx!.strokeStyle = "#888";
-      ctx!.lineWidth = 3;
+
+      // ラペル（襟）
+      ctx!.fillStyle = enraged ? "#4a2a3c" : "#2c303c";
       ctx!.beginPath();
-      ctx!.moveTo(0, -4);
-      ctx!.lineTo(-6, 30);
-      ctx!.moveTo(0, -4);
-      ctx!.lineTo(6, 30);
-      ctx!.stroke();
+      ctx!.moveTo(0, -6);
+      ctx!.lineTo(-14, 4);
+      ctx!.lineTo(-6, 20);
+      ctx!.lineTo(0, 4);
+      ctx!.closePath();
+      ctx!.fill();
+      ctx!.beginPath();
+      ctx!.moveTo(0, -6);
+      ctx!.lineTo(14, 4);
+      ctx!.lineTo(6, 20);
+      ctx!.lineTo(0, 4);
+      ctx!.closePath();
+      ctx!.fill();
+
+      // シャツの襟元
+      ctx!.fillStyle = "#f0f0f0";
+      ctx!.beginPath();
+      ctx!.moveTo(-5, -6);
+      ctx!.lineTo(0, 6);
+      ctx!.lineTo(5, -6);
+      ctx!.lineTo(0, -10);
+      ctx!.closePath();
+      ctx!.fill();
+
+      // ネクタイ（グレー、お洒落に）
+      ctx!.fillStyle = "#8a8f98";
+      ctx!.beginPath();
+      ctx!.moveTo(-3, -4);
+      ctx!.lineTo(3, -4);
+      ctx!.lineTo(2, 30);
+      ctx!.lineTo(0, 34);
+      ctx!.lineTo(-2, 30);
+      ctx!.closePath();
+      ctx!.fill();
+
+      // 顔
       ctx!.fillStyle = "#f2c49b";
       ctx!.beginPath();
       ctx!.arc(0, -22, 18, 0, Math.PI * 2);
       ctx!.fill();
+
+      // 髪（サイドに流した長めの前髪）
       ctx!.fillStyle = "#241c14";
       ctx!.beginPath();
-      ctx!.arc(0, -28, 18, Math.PI, Math.PI * 2);
+      ctx!.arc(0, -28, 18.5, Math.PI, Math.PI * 2);
       ctx!.fill();
-      ctx!.strokeStyle = "#111";
+      ([[210, 10, 3], [235, 16, 3.4], [260, 20, 3.6], [285, 14, 3]] as [number, number, number][]).forEach(
+        ([ang, len, w]) => drawSpike(0, -28, 18, ang, len, w, "#241c14")
+      );
+
+      // 吊り上がった眉（怖い）
+      ctx!.strokeStyle = "#1a140e";
       ctx!.lineWidth = 2;
       ctx!.beginPath();
-      ctx!.arc(-7, -22, 6, 0, Math.PI * 2);
-      ctx!.arc(7, -22, 6, 0, Math.PI * 2);
-      ctx!.moveTo(-1, -22);
-      ctx!.lineTo(1, -22);
+      ctx!.moveTo(-13, -28);
+      ctx!.lineTo(-4, -25);
+      ctx!.moveTo(13, -28);
+      ctx!.lineTo(4, -25);
+      ctx!.stroke();
+
+      // メガネ（四角、お洒落な細フレーム）
+      ctx!.strokeStyle = "#111";
+      ctx!.lineWidth = 2;
+      ctx!.strokeRect(-13, -25, 9, 8);
+      ctx!.strokeRect(4, -25, 9, 8);
+      ctx!.beginPath();
+      ctx!.moveTo(-4, -21);
+      ctx!.lineTo(4, -21);
       ctx!.stroke();
       ctx!.fillStyle = "#111";
-      ctx!.fillRect(-9, -24, 4, 3);
-      ctx!.fillRect(5, -24, 4, 3);
+      ctx!.beginPath();
+      ctx!.arc(-8.5, -21, 1.3, 0, Math.PI * 2);
+      ctx!.arc(8.5, -21, 1.3, 0, Math.PI * 2);
+      ctx!.fill();
+
+      // への字口
+      ctx!.strokeStyle = "#7a4a2a";
+      ctx!.lineWidth = 1.4;
+      ctx!.beginPath();
+      ctx!.moveTo(-4, -13);
+      ctx!.lineTo(4, -13);
+      ctx!.stroke();
+
       // ギター
       ctx!.save();
       ctx!.translate(-30, 10);
@@ -816,6 +1068,7 @@ export default function YamachanGame() {
       ctx!.fill();
       ctx!.fillRect(-2, -34, 4, 22);
       ctx!.restore();
+
       ctx!.restore();
       label("フック", b.x, b.y - 58);
     }
