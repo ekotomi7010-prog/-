@@ -1,0 +1,1298 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>山ちゃんが飛ぶ 設定資料</title>
+<style>
+  /* ── 版下トークン（明＝原稿用紙 / 暗＝校正室） ───────────────── */
+  :root {
+    --paper:      #f2ece0;
+    --plate:      #faf6ec;
+    --ink:        #17161c;
+    --ink-2:      #4a4640;
+    --ink-3:      #857e70;
+    --rule:       #cdc4b1;
+    --rule-hard:  #2a2731;
+    --red:        #bf3527;
+    --indigo:     #2b4470;
+
+    --gothic: "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Yu Gothic Medium",
+              "Yu Gothic", "Noto Sans JP", Meiryo, sans-serif;
+    --mincho: "Hiragino Mincho ProN", "Yu Mincho", YuMincho, "Noto Serif JP",
+              "MS PMincho", serif;
+    --mono:   ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+
+    --gap: 20px;
+    --max: 1180px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper:     #141318;
+      --plate:     #1e1c24;
+      --ink:       #ece6d8;
+      --ink-2:     #b0a898;
+      --ink-3:     #7e7869;
+      --rule:      #35323e;
+      --rule-hard: #4e4a5a;
+      --red:       #e2705f;
+      --indigo:    #93aad6;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper:     #141318;
+    --plate:     #1e1c24;
+    --ink:       #ece6d8;
+    --ink-2:     #b0a898;
+    --ink-3:     #7e7869;
+    --rule:      #35323e;
+    --rule-hard: #4e4a5a;
+    --red:       #e2705f;
+    --indigo:    #93aad6;
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    padding: 0 18px 72px;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--gothic);
+    line-height: 1.6;
+  }
+
+  .sheet { max-width: var(--max); margin: 0 auto; }
+
+  /* ── 題字まわり ───────────────────────────────────────────── */
+  .masthead {
+    border-top: 5px solid var(--rule-hard);
+    padding-top: 14px;
+    margin-top: 34px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 12px 24px;
+  }
+  .masthead h1 {
+    font-size: clamp(21px, 3.4vw, 30px);
+    font-weight: 800;
+    letter-spacing: .01em;
+    margin: 0;
+    text-wrap: balance;
+  }
+  .masthead h1 .mark { color: var(--red); }
+  .docmeta {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-3);
+    text-align: right;
+    line-height: 1.85;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .docmeta b { color: var(--ink-2); font-weight: 500; }
+
+  .lead {
+    font-family: var(--mincho);
+    font-size: 14px;
+    color: var(--ink-2);
+    line-height: 1.95;
+    margin: 16px 0 0;
+    max-width: 62ch;
+    border-left: 2px solid var(--rule);
+    padding-left: 14px;
+  }
+
+  /* ── 章見出し ─────────────────────────────────────────────── */
+  .chapter {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin: 46px 0 18px;
+    padding-bottom: 9px;
+    border-bottom: 1px solid var(--rule-hard);
+  }
+  .chapter .tick {
+    width: 4px; height: 15px;
+    background: var(--red);
+    flex: none;
+    transform: translateY(1px);
+  }
+  .chapter h2 {
+    font-size: 15px; font-weight: 800; margin: 0;
+    letter-spacing: .06em;
+  }
+  .chapter .count {
+    font-family: var(--mono); font-size: 11px; color: var(--ink-3);
+    margin-left: auto; font-variant-numeric: tabular-nums;
+  }
+
+  /* ── 図版パネル ───────────────────────────────────────────── */
+  .grid {
+    display: grid;
+    gap: var(--gap);
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  }
+  .panel {
+    position: relative;
+    background: var(--plate);
+    border: 1px solid var(--rule-hard);
+    padding: 14px 14px 16px;
+    display: flex;
+    flex-direction: column;
+  }
+  .panel-no {
+    position: absolute;
+    top: 0; left: 0;
+    background: var(--rule-hard);
+    color: var(--plate);
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: .08em;
+    padding: 3px 7px 2px;
+    font-variant-numeric: tabular-nums;
+  }
+  .plate {
+    border: 1px solid var(--rule);
+    background: #f4f1e8;
+    margin-bottom: 12px;
+  }
+  .plate canvas { display: block; width: 100%; height: auto; }
+
+  .p-name {
+    font-size: 17px; font-weight: 800; margin: 0;
+    letter-spacing: .01em;
+  }
+  .p-role {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    color: var(--red);
+    letter-spacing: .04em;
+    margin: 3px 0 10px;
+  }
+  .p-traits {
+    list-style: none;
+    margin: 0; padding: 0;
+    font-family: var(--mincho);
+    font-size: 12.5px;
+    color: var(--ink-2);
+    line-height: 1.8;
+    display: flex; flex-direction: column; gap: 3px;
+  }
+  .p-traits li { padding-left: 15px; position: relative; }
+  .p-traits li::before {
+    content: "・";
+    position: absolute; left: 0; top: 0;
+    color: var(--ink-3);
+  }
+
+  /* ── 校正メモ ─────────────────────────────────────────────── */
+  .memo {
+    margin-top: 48px;
+    border: 1px solid var(--red);
+    border-left-width: 4px;
+    padding: 18px 20px;
+    background: color-mix(in srgb, var(--red) 5%, var(--plate));
+  }
+  .memo h2 {
+    font-size: 13px; font-weight: 800; margin: 0 0 12px;
+    color: var(--red); letter-spacing: .07em;
+  }
+  .memo ol {
+    margin: 0; padding-left: 20px;
+    font-family: var(--mincho);
+    font-size: 13px; line-height: 2.05; color: var(--ink-2);
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .memo b { color: var(--ink); font-weight: 700; }
+  .memo .route {
+    font-family: var(--gothic); font-size: 12.5px;
+    color: var(--ink); font-weight: 600;
+  }
+
+  .colophon {
+    margin-top: 26px; padding-top: 14px;
+    border-top: 1px solid var(--rule);
+    font-family: var(--mono); font-size: 10.5px;
+    color: var(--ink-3); letter-spacing: .03em;
+  }
+
+  @media (max-width: 560px) {
+    .docmeta { text-align: left; }
+    .grid { grid-template-columns: repeat(auto-fill, minmax(158px, 1fr)); }
+    .p-name { font-size: 15px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="sheet">
+
+  <header class="masthead">
+    <h1>山ちゃんが飛ぶ<span class="mark">!!</span> ／ キャラクター設定</h1>
+    <div class="docmeta">
+      資料番号 <b>YMC-001</b><br>
+      版 <b>第1稿</b>　実装前確認用<br>
+      舞台 <b>荏田高等学校 → 町田</b>
+    </div>
+  </header>
+
+  <p class="lead">
+    漫画調で全キャラを描き起こした案です。実装前の確認用なので、
+    体型・髪型・服・小物・表情、どこでも直したいところを言ってください。
+    OKが出てからゲーム本体に反映します。
+  </p>
+
+  <div class="chapter">
+    <span class="tick"></span>
+    <h2>主人公とラストボス</h2>
+    <span class="count">2点</span>
+  </div>
+  <div class="grid" id="grid-main"></div>
+
+  <div class="chapter">
+    <span class="tick"></span>
+    <h2>道中の敵キャラクター</h2>
+    <span class="count">7点</span>
+  </div>
+  <div class="grid" id="grid-enemy"></div>
+
+  <div class="chapter">
+    <span class="tick"></span>
+    <h2>アイテム</h2>
+    <span class="count">4点</span>
+  </div>
+  <div class="grid" id="grid-item"></div>
+
+  <section class="memo">
+    <h2>確認したいこと</h2>
+    <ol>
+      <li>山ちゃんは<b>結婚式用の白タキシード</b>（燕尾＋白ベスト＋アスコットタイ＋白百合のブートニア）にしました。</li>
+      <li>いただいた文では「江田高等学校」でしたが、学校名は<b>荏田高等学校</b>で統一しています（江田は駅名のため）。違っていたら直します。</li>
+      <li>青木先生の「ヤマウラーー！！！」とハシダテの「もてたい！」は、ゲーム中も吹き出しで出す想定です。</li>
+      <li>ハシダテは<b>片脚だけすね毛処理済み</b>という描き分けにしています。やりすぎなら普通に戻します。</li>
+      <li>ステージ順は下記で作ります。<br>
+        <span class="route">荏田高校 → コープ（店員が試食で攻撃）→ たまプラーザ駅 → 南町田グランベリーモール駅（キセルで改札を出る演出）→ 境川沿いの舗装路（両岸が見える画・途中に赤い大正堂）→ 町田のファミマでフック戦</span></li>
+      <li>ミスした時は<b>「荏田高等学校 退学 → 田奈高校へ」</b>の演出を入れます。</li>
+    </ol>
+  </section>
+
+  <p class="colophon">山ちゃんが飛ぶ!! ／ キャラクター設定資料　第1稿　実装前確認用</p>
+
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var INK = "#1b1b1b";
+
+  // ---------- 共通の描画ヘルパー ----------
+  function ink(ctx, lw) {
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = lw === undefined ? 2.4 : lw;
+    ctx.lineJoin = "round";
+    ctx.lineCap = "round";
+    ctx.stroke();
+  }
+  function fillInk(ctx, color, lw) {
+    ctx.fillStyle = color;
+    ctx.fill();
+    ink(ctx, lw);
+  }
+
+  // 顔の輪郭（あご先が少し細い漫画的な形）
+  function faceShape(ctx, r) {
+    ctx.beginPath();
+    ctx.moveTo(-r, -2);
+    ctx.bezierCurveTo(-r, -r * 1.2, r, -r * 1.2, r, -2);
+    ctx.bezierCurveTo(r, r * 0.6, r * 0.5, r * 1.1, 0, r * 1.16);
+    ctx.bezierCurveTo(-r * 0.5, r * 1.1, -r, r * 0.6, -r, -2);
+    ctx.closePath();
+  }
+
+  // 見開いた目
+  function eye(ctx, x, y, w, h, look) {
+    look = look || 0;
+    ctx.beginPath(); ctx.ellipse(x, y, w, h, 0, 0, Math.PI * 2);
+    ctx.fillStyle = "#fff"; ctx.fill();
+    ctx.beginPath(); ctx.ellipse(x + look, y + h * 0.08, w * 0.56, h * 0.72, 0, 0, Math.PI * 2);
+    ctx.fillStyle = "#2b2b2b"; ctx.fill();
+    ctx.beginPath(); ctx.arc(x - w * 0.22 + look, y - h * 0.32, w * 0.24, 0, Math.PI * 2);
+    ctx.fillStyle = "#fff"; ctx.fill();
+    ctx.beginPath(); ctx.ellipse(x, y, w, h, 0, Math.PI * 1.02, Math.PI * 1.98);
+    ctx.strokeStyle = INK; ctx.lineWidth = 3; ctx.lineCap = "round"; ctx.stroke();
+  }
+  // 笑って細めた目（への字の逆）
+  function eyeSmile(ctx, x, y, w) {
+    ctx.beginPath(); ctx.arc(x, y + 4, w, Math.PI * 1.12, Math.PI * 1.88);
+    ctx.strokeStyle = INK; ctx.lineWidth = 3; ctx.lineCap = "round"; ctx.stroke();
+  }
+  // 鋭い目（怒り・冷たい）
+  function eyeSharp(ctx, x, y, w, h, dir) {
+    ctx.beginPath(); ctx.ellipse(x, y, w, h, 0, 0, Math.PI * 2);
+    ctx.fillStyle = "#fff"; ctx.fill();
+    ctx.beginPath(); ctx.ellipse(x, y, w * 0.5, h * 0.85, 0, 0, Math.PI * 2);
+    ctx.fillStyle = "#1f1f1f"; ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(x - w * 1.15, y - h * (dir > 0 ? 1.1 : 0.5));
+    ctx.lineTo(x + w * 1.15, y - h * (dir > 0 ? 0.5 : 1.1));
+    ctx.strokeStyle = INK; ctx.lineWidth = 3.4; ctx.lineCap = "round"; ctx.stroke();
+  }
+  function brow(ctx, x, y, w, tilt, lw) {
+    ctx.beginPath();
+    ctx.moveTo(x - w, y + tilt);
+    ctx.lineTo(x + w, y - tilt);
+    ctx.strokeStyle = INK; ctx.lineWidth = lw || 3; ctx.lineCap = "round"; ctx.stroke();
+  }
+  function nose(ctx, x, y) {
+    ctx.beginPath();
+    ctx.moveTo(x - 2, y); ctx.lineTo(x + 1.5, y + 3);
+    ctx.strokeStyle = "#a9755a"; ctx.lineWidth = 2; ctx.lineCap = "round"; ctx.stroke();
+  }
+  // 大きく開けた笑顔の口
+  function mouthGrin(ctx, x, y, w, h) {
+    ctx.beginPath();
+    ctx.moveTo(x - w, y);
+    ctx.quadraticCurveTo(x, y + h * 2.1, x + w, y);
+    ctx.quadraticCurveTo(x, y + h * 0.35, x - w, y);
+    ctx.closePath();
+    ctx.fillStyle = "#7d3a3a"; ctx.fill();
+    ctx.strokeStyle = INK; ctx.lineWidth = 2.2; ctx.stroke();
+    // 歯
+    ctx.beginPath();
+    ctx.moveTo(x - w * 0.82, y + h * 0.12);
+    ctx.quadraticCurveTo(x, y + h * 0.55, x + w * 0.82, y + h * 0.12);
+    ctx.lineTo(x + w * 0.82, y + h * 0.02);
+    ctx.quadraticCurveTo(x, y + h * 0.3, x - w * 0.82, y + h * 0.02);
+    ctx.closePath();
+    ctx.fillStyle = "#fff"; ctx.fill();
+  }
+  function mouthSmile(ctx, x, y, w) {
+    ctx.beginPath();
+    ctx.moveTo(x - w, y);
+    ctx.quadraticCurveTo(x, y + w * 0.9, x + w, y);
+    ctx.strokeStyle = INK; ctx.lineWidth = 2.4; ctx.lineCap = "round"; ctx.stroke();
+  }
+  function mouthFlat(ctx, x, y, w) {
+    ctx.beginPath(); ctx.moveTo(x - w, y); ctx.lineTo(x + w, y);
+    ctx.strokeStyle = INK; ctx.lineWidth = 2.4; ctx.lineCap = "round"; ctx.stroke();
+  }
+  function mouthShout(ctx, x, y, w, h) {
+    ctx.beginPath(); ctx.ellipse(x, y + h * 0.4, w, h, 0, 0, Math.PI * 2);
+    fillInk(ctx, "#7d3a3a", 2.4);
+    ctx.beginPath(); ctx.ellipse(x, y + h * 0.9, w * 0.5, h * 0.35, 0, 0, Math.PI * 2);
+    ctx.fillStyle = "#d munch"; // fallback below
+    ctx.fillStyle = "#c96a6a"; ctx.fill();
+  }
+  function blush(ctx, x, y) {
+    ctx.strokeStyle = "rgba(226,110,110,0.85)"; ctx.lineWidth = 1.6; ctx.lineCap = "round";
+    for (var i = -1; i <= 1; i++) {
+      ctx.beginPath();
+      ctx.moveTo(x + i * 4 - 3, y - 2);
+      ctx.lineTo(x + i * 4 + 1, y + 4);
+      ctx.stroke();
+    }
+  }
+  function ear(ctx, x, y, s) {
+    ctx.beginPath(); ctx.ellipse(x, y, 4 * s, 6 * s, 0, 0, Math.PI * 2);
+    fillInk(ctx, "#f0c096", 2);
+  }
+  // 髪のツヤ（漫画的なハイライト帯）
+  function hairShine(ctx, x, y, w, h, color) {
+    ctx.beginPath();
+    ctx.ellipse(x, y, w, h, -0.35, 0, Math.PI * 2);
+    ctx.fillStyle = color || "rgba(255,255,255,0.4)";
+    ctx.fill();
+  }
+  // 吹き出し
+  function speech(ctx, x, y, text, w) {
+    w = w || 76;
+    var h = 26;
+    ctx.beginPath();
+    ctx.moveTo(x - w / 2, y - h / 2);
+    ctx.lineTo(x + w / 2, y - h / 2);
+    ctx.lineTo(x + w / 2, y + h / 2);
+    ctx.lineTo(x - w / 2 + 16, y + h / 2);
+    ctx.lineTo(x - w / 2 + 6, y + h / 2 + 9);
+    ctx.lineTo(x - w / 2 + 8, y + h / 2);
+    ctx.lineTo(x - w / 2, y + h / 2);
+    ctx.closePath();
+    fillInk(ctx, "#fff", 2.2);
+    ctx.fillStyle = INK;
+    ctx.font = "bold 12px sans-serif";
+    ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    ctx.fillText(text, x, y);
+  }
+
+  // ---------- キャラクター描画 ----------
+  // 座標系：頭の中心が (0,0)。足元は y=205 あたり。
+
+  function drawYamachan(ctx) {
+    var SKIN = "#f7cba4", WHITE = "#fdfbf2", WSHADE = "#e6e0cd";
+    // 脚（白パンツ）
+    ctx.beginPath();
+    ctx.moveTo(-22, 96); ctx.lineTo(-24, 176); ctx.lineTo(-6, 176); ctx.lineTo(-3, 100);
+    ctx.lineTo(3, 100); ctx.lineTo(6, 176); ctx.lineTo(24, 176); ctx.lineTo(22, 96);
+    ctx.closePath();
+    fillInk(ctx, WHITE, 2.4);
+    // 靴（白）
+    ctx.beginPath(); ctx.ellipse(-15, 182, 13, 8, 0, 0, Math.PI * 2); fillInk(ctx, "#efeade", 2.4);
+    ctx.beginPath(); ctx.ellipse(15, 182, 13, 8, 0, 0, Math.PI * 2); fillInk(ctx, "#efeade", 2.4);
+    // 燕尾の裾
+    ctx.beginPath();
+    ctx.moveTo(-26, 60); ctx.quadraticCurveTo(-36, 100, -22, 126); ctx.lineTo(-10, 92); ctx.closePath();
+    fillInk(ctx, WSHADE, 2.2);
+    ctx.beginPath();
+    ctx.moveTo(26, 60); ctx.quadraticCurveTo(36, 100, 22, 126); ctx.lineTo(10, 92); ctx.closePath();
+    fillInk(ctx, WSHADE, 2.2);
+    // 胴（白タキシード）
+    ctx.beginPath();
+    ctx.moveTo(-30, 44); ctx.quadraticCurveTo(-34, 78, -28, 102);
+    ctx.lineTo(28, 102); ctx.quadraticCurveTo(34, 78, 30, 44);
+    ctx.quadraticCurveTo(0, 32, -30, 44);
+    ctx.closePath();
+    fillInk(ctx, WHITE, 2.6);
+    // 白ベスト
+    ctx.beginPath();
+    ctx.moveTo(-13, 44); ctx.lineTo(0, 96); ctx.lineTo(13, 44); ctx.quadraticCurveTo(0, 38, -13, 44);
+    ctx.closePath();
+    fillInk(ctx, "#f4efdd", 2);
+    // ラペル
+    ctx.beginPath();
+    ctx.moveTo(-4, 36); ctx.lineTo(-26, 50); ctx.lineTo(-12, 82); ctx.lineTo(-2, 48); ctx.closePath();
+    fillInk(ctx, "#f0ead6", 2.2);
+    ctx.beginPath();
+    ctx.moveTo(4, 36); ctx.lineTo(26, 50); ctx.lineTo(12, 82); ctx.lineTo(2, 48); ctx.closePath();
+    fillInk(ctx, "#f0ead6", 2.2);
+    // アスコットタイ
+    ctx.beginPath();
+    ctx.moveTo(-9, 38); ctx.quadraticCurveTo(0, 56, 9, 38); ctx.quadraticCurveTo(0, 33, -9, 38);
+    ctx.closePath();
+    fillInk(ctx, "#ffffff", 2.2);
+    // ブートニア（白百合）
+    ctx.save(); ctx.translate(-21, 56);
+    [[0,-5],[5,-1],[3,5],[-3,5],[-5,-1]].forEach(function (p) {
+      ctx.beginPath(); ctx.ellipse(p[0], p[1], 3.4, 4.6, Math.atan2(p[1], p[0]) + Math.PI / 2, 0, Math.PI * 2);
+      fillInk(ctx, "#ffffff", 1.6);
+    });
+    ctx.beginPath(); ctx.arc(0, 0, 2.4, 0, Math.PI * 2); fillInk(ctx, "#f2d14e", 1.4);
+    ctx.restore();
+    // 腕（片手を挙げてピース気味）
+    ctx.beginPath();
+    ctx.moveTo(-28, 50); ctx.quadraticCurveTo(-48, 62, -46, 88);
+    ctx.strokeStyle = INK; ctx.lineWidth = 15; ctx.lineCap = "round"; ctx.stroke();
+    ctx.strokeStyle = WHITE; ctx.lineWidth = 11; ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(28, 50); ctx.quadraticCurveTo(50, 44, 52, 20);
+    ctx.strokeStyle = INK; ctx.lineWidth = 15; ctx.stroke();
+    ctx.strokeStyle = WHITE; ctx.lineWidth = 11; ctx.stroke();
+    ctx.beginPath(); ctx.arc(-46, 92, 7, 0, Math.PI * 2); fillInk(ctx, SKIN, 2.2);
+    ctx.beginPath(); ctx.arc(53, 14, 7.5, 0, Math.PI * 2); fillInk(ctx, SKIN, 2.2);
+    // 首
+    ctx.beginPath(); ctx.rect(-8, 24, 16, 16); fillInk(ctx, "#e8b892", 2.2);
+    // 顔
+    ear(ctx, -30, 4, 1); ear(ctx, 30, 4, 1);
+    faceShape(ctx, 30); fillInk(ctx, SKIN, 2.6);
+    // 髪（短い黒髪・前髪は右に流す）
+    ctx.beginPath();
+    ctx.moveTo(-31, 2);
+    ctx.bezierCurveTo(-34, -30, -14, -40, 2, -38);
+    ctx.bezierCurveTo(22, -37, 33, -24, 31, 2);
+    ctx.lineTo(24, -4);
+    ctx.bezierCurveTo(20, -16, 4, -20, -6, -12);
+    ctx.bezierCurveTo(-12, -7, -18, -6, -24, -10);
+    ctx.lineTo(-31, 2);
+    ctx.closePath();
+    fillInk(ctx, "#1f1f1f", 2.4);
+    hairShine(ctx, 8, -26, 12, 4, "rgba(255,255,255,0.32)");
+    eyeSmile(ctx, -12, -2, 8);
+    eyeSmile(ctx, 12, -2, 8);
+    brow(ctx, -12, -14, 8, -1.5, 2.6);
+    brow(ctx, 12, -14, 8, 1.5, 2.6);
+    nose(ctx, 0, 6);
+    mouthGrin(ctx, 0, 12, 12, 7);
+    blush(ctx, -21, 8); blush(ctx, 21, 8);
+  }
+
+  function drawHook(ctx) {
+    var SKIN = "#f2c49b", SUIT = "#23262f", SUIT2 = "#2f3340";
+    // 脚
+    ctx.beginPath();
+    ctx.moveTo(-22, 98); ctx.lineTo(-24, 176); ctx.lineTo(-6, 176); ctx.lineTo(-3, 102);
+    ctx.lineTo(3, 102); ctx.lineTo(6, 176); ctx.lineTo(24, 176); ctx.lineTo(22, 98);
+    ctx.closePath(); fillInk(ctx, SUIT, 2.4);
+    ctx.beginPath(); ctx.ellipse(-15, 182, 13, 8, 0, 0, Math.PI * 2); fillInk(ctx, "#15171c", 2.4);
+    ctx.beginPath(); ctx.ellipse(15, 182, 13, 8, 0, 0, Math.PI * 2); fillInk(ctx, "#15171c", 2.4);
+    // 胴（黒スーツ）
+    ctx.beginPath();
+    ctx.moveTo(-31, 44); ctx.quadraticCurveTo(-35, 80, -29, 106);
+    ctx.lineTo(29, 106); ctx.quadraticCurveTo(35, 80, 31, 44);
+    ctx.quadraticCurveTo(0, 32, -31, 44); ctx.closePath();
+    fillInk(ctx, SUIT, 2.6);
+    // シャツ
+    ctx.beginPath();
+    ctx.moveTo(-12, 40); ctx.lineTo(0, 92); ctx.lineTo(12, 40); ctx.quadraticCurveTo(0, 35, -12, 40);
+    ctx.closePath(); fillInk(ctx, "#f4f4f2", 2.2);
+    // ネクタイ（グレー）
+    ctx.beginPath();
+    ctx.moveTo(-5, 40); ctx.lineTo(5, 40); ctx.lineTo(4, 86); ctx.lineTo(0, 94); ctx.lineTo(-4, 86);
+    ctx.closePath(); fillInk(ctx, "#8f95a1", 2.2);
+    // ラペル
+    ctx.beginPath();
+    ctx.moveTo(-4, 34); ctx.lineTo(-27, 50); ctx.lineTo(-13, 84); ctx.lineTo(-2, 46); ctx.closePath();
+    fillInk(ctx, SUIT2, 2.2);
+    ctx.beginPath();
+    ctx.moveTo(4, 34); ctx.lineTo(27, 50); ctx.lineTo(13, 84); ctx.lineTo(2, 46); ctx.closePath();
+    fillInk(ctx, SUIT2, 2.2);
+    // ギター（ストラップで提げている）
+    ctx.save(); ctx.translate(-44, 96); ctx.rotate(-0.42);
+    ctx.beginPath(); ctx.ellipse(0, 0, 20, 25, 0, 0, Math.PI * 2); fillInk(ctx, "#8b4a28", 2.4);
+    ctx.beginPath(); ctx.ellipse(0, -6, 6, 6, 0, 0, Math.PI * 2); fillInk(ctx, "#2a1810", 2);
+    ctx.beginPath(); ctx.rect(-4, -66, 8, 44); fillInk(ctx, "#6b3a1e", 2.2);
+    ctx.beginPath(); ctx.rect(-6, -76, 12, 12); fillInk(ctx, "#2a1810", 2.2);
+    ctx.restore();
+    // 腕
+    ctx.beginPath(); ctx.moveTo(-29, 50); ctx.quadraticCurveTo(-46, 66, -42, 92);
+    ctx.strokeStyle = INK; ctx.lineWidth = 15; ctx.lineCap = "round"; ctx.stroke();
+    ctx.strokeStyle = SUIT; ctx.lineWidth = 11; ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(29, 50); ctx.quadraticCurveTo(46, 66, 40, 92);
+    ctx.strokeStyle = INK; ctx.lineWidth = 15; ctx.stroke();
+    ctx.strokeStyle = SUIT; ctx.lineWidth = 11; ctx.stroke();
+    ctx.beginPath(); ctx.arc(-42, 96, 7, 0, Math.PI * 2); fillInk(ctx, SKIN, 2.2);
+    ctx.beginPath(); ctx.arc(40, 96, 7, 0, Math.PI * 2); fillInk(ctx, SKIN, 2.2);
+    // 首
+    ctx.beginPath(); ctx.rect(-8, 24, 16, 16); fillInk(ctx, "#e0ab84", 2.2);
+    // 顔
+    ear(ctx, -30, 4, 1); ear(ctx, 30, 4, 1);
+    faceShape(ctx, 30); fillInk(ctx, SKIN, 2.6);
+    // 髪（重めの前髪をサイドに流す）
+    ctx.beginPath();
+    ctx.moveTo(-32, 8);
+    ctx.bezierCurveTo(-38, -28, -16, -42, 2, -40);
+    ctx.bezierCurveTo(24, -39, 34, -22, 32, 6);
+    ctx.lineTo(26, -2);
+    ctx.bezierCurveTo(24, -14, 16, -20, 6, -18);
+    ctx.bezierCurveTo(-6, -16, -14, -4, -20, 6);
+    ctx.bezierCurveTo(-24, 0, -28, 2, -32, 8);
+    ctx.closePath();
+    fillInk(ctx, "#231a12", 2.4);
+    // 横に垂れた毛束
+    ctx.beginPath();
+    ctx.moveTo(-20, 6); ctx.bezierCurveTo(-26, 16, -28, 24, -26, 30);
+    ctx.lineTo(-18, 22); ctx.bezierCurveTo(-16, 14, -16, 8, -14, 2);
+    ctx.closePath(); fillInk(ctx, "#231a12", 2.2);
+    hairShine(ctx, 10, -28, 11, 3.6, "rgba(255,255,255,0.22)");
+    // 吊り上がった眉
+    brow(ctx, -13, -14, 9, -4.5, 3.4);
+    brow(ctx, 13, -14, 9, 4.5, 3.4);
+    // メガネ＋鋭い目
+    eyeSharp(ctx, -12, -1, 7, 5.5, 1);
+    eyeSharp(ctx, 12, -1, 7, 5.5, -1);
+    ctx.beginPath();
+    ctx.roundRect ? ctx.roundRect(-23, -9, 22, 17, 3) : ctx.rect(-23, -9, 22, 17);
+    ctx.strokeStyle = INK; ctx.lineWidth = 2.6; ctx.stroke();
+    ctx.beginPath();
+    ctx.roundRect ? ctx.roundRect(1, -9, 22, 17, 3) : ctx.rect(1, -9, 22, 17);
+    ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(-1, -2); ctx.lineTo(1, -2); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(-23, -3); ctx.lineTo(-30, -1); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(23, -3); ctx.lineTo(30, -1); ctx.stroke();
+    nose(ctx, 0, 8);
+    mouthFlat(ctx, 0, 16, 8);
+    // 威圧の効果線
+    ctx.strokeStyle = "rgba(30,30,30,0.5)"; ctx.lineWidth = 2;
+    [-52, -44, 44, 52].forEach(function (x) {
+      ctx.beginPath(); ctx.moveTo(x, -44); ctx.lineTo(x, -22); ctx.stroke();
+    });
+  }
+
+  function drawAoki(ctx) {
+    var SKIN = "#f2c49b", VEST = "#7a6a4a", SHIRT = "#f2f0e6";
+    // 脚（スラックス）
+    ctx.beginPath();
+    ctx.moveTo(-20, 98); ctx.lineTo(-22, 174); ctx.lineTo(-5, 174); ctx.lineTo(-2, 102);
+    ctx.lineTo(2, 102); ctx.lineTo(5, 174); ctx.lineTo(22, 174); ctx.lineTo(20, 98);
+    ctx.closePath(); fillInk(ctx, "#4a4438", 2.4);
+    ctx.beginPath(); ctx.ellipse(-14, 180, 12, 7, 0, 0, Math.PI * 2); fillInk(ctx, "#2a2620", 2.4);
+    ctx.beginPath(); ctx.ellipse(14, 180, 12, 7, 0, 0, Math.PI * 2); fillInk(ctx, "#2a2620", 2.4);
+    // シャツ（痩せ型なので細め）
+    ctx.beginPath();
+    ctx.moveTo(-26, 44); ctx.quadraticCurveTo(-29, 76, -25, 102);
+    ctx.lineTo(25, 102); ctx.quadraticCurveTo(29, 76, 26, 44);
+    ctx.quadraticCurveTo(0, 33, -26, 44); ctx.closePath();
+    fillInk(ctx, SHIRT, 2.6);
+    // ベストセーター
+    ctx.beginPath();
+    ctx.moveTo(-24, 52); ctx.quadraticCurveTo(-27, 78, -23, 100);
+    ctx.lineTo(23, 100); ctx.quadraticCurveTo(27, 78, 24, 52);
+    ctx.lineTo(12, 46); ctx.lineTo(0, 68); ctx.lineTo(-12, 46);
+    ctx.closePath(); fillInk(ctx, VEST, 2.4);
+    // ネクタイ
+    ctx.beginPath();
+    ctx.moveTo(-4, 40); ctx.lineTo(4, 40); ctx.lineTo(3, 66); ctx.lineTo(0, 72); ctx.lineTo(-3, 66);
+    ctx.closePath(); fillInk(ctx, "#a83f3f", 2.2);
+    // 襟
+    ctx.beginPath();
+    ctx.moveTo(-3, 36); ctx.lineTo(-14, 46); ctx.lineTo(-4, 48); ctx.closePath();
+    fillInk(ctx, "#fff", 2);
+    ctx.beginPath();
+    ctx.moveTo(3, 36); ctx.lineTo(14, 46); ctx.lineTo(4, 48); ctx.closePath();
+    fillInk(ctx, "#fff", 2);
+    // 腕（片手を突き上げて叫ぶ）
+    ctx.beginPath(); ctx.moveTo(-25, 52); ctx.quadraticCurveTo(-44, 44, -48, 16);
+    ctx.strokeStyle = INK; ctx.lineWidth = 14; ctx.lineCap = "round"; ctx.stroke();
+    ctx.strokeStyle = VEST; ctx.lineWidth = 10; ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(25, 52); ctx.quadraticCurveTo(42, 66, 38, 92);
+    ctx.strokeStyle = INK; ctx.lineWidth = 14; ctx.stroke();
+    ctx.strokeStyle = VEST; ctx.lineWidth = 10; ctx.stroke();
+    ctx.beginPath(); ctx.arc(-49, 10, 7.5, 0, Math.PI * 2); fillInk(ctx, SKIN, 2.2);
+    ctx.beginPath(); ctx.arc(38, 96, 7, 0, Math.PI * 2); fillInk(ctx, SKIN, 2.2);
+    // 首
+    ctx.beginPath(); ctx.rect(-7, 24, 14, 16); fillInk(ctx, "#e0ab84", 2.2);
+    // 顔（少し面長＝痩せ）
+    ear(ctx, -28, 4, 1); ear(ctx, 28, 4, 1);
+    ctx.save(); ctx.scale(0.94, 1.06);
+    faceShape(ctx, 29); fillInk(ctx, SKIN, 2.6);
+    ctx.restore();
+    // 髪（七三・やや後退）
+    ctx.beginPath();
+    ctx.moveTo(-29, 0);
+    ctx.bezierCurveTo(-31, -26, -12, -36, 4, -34);
+    ctx.bezierCurveTo(22, -32, 30, -20, 29, 0);
+    ctx.lineTo(23, -6);
+    ctx.bezierCurveTo(20, -18, 2, -22, -8, -14);
+    ctx.lineTo(-29, 0);
+    ctx.closePath(); fillInk(ctx, "#2b2b2b", 2.4);
+    hairShine(ctx, 8, -24, 10, 3.2, "rgba(255,255,255,0.28)");
+    // 怒りの眉
+    brow(ctx, -12, -15, 8, -5, 3.4);
+    brow(ctx, 12, -15, 8, 5, 3.4);
+    // メガネ
+    eye(ctx, -12, -2, 7, 6.5, 0);
+    eye(ctx, 12, -2, 7, 6.5, 0);
+    ctx.strokeStyle = INK; ctx.lineWidth = 2.4;
+    ctx.beginPath(); ctx.arc(-12, -2, 10, 0, Math.PI * 2); ctx.stroke();
+    ctx.beginPath(); ctx.arc(12, -2, 10, 0, Math.PI * 2); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(-2, -2); ctx.lineTo(2, -2); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(-22, -3); ctx.lineTo(-29, -1); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(22, -3); ctx.lineTo(29, -1); ctx.stroke();
+    nose(ctx, 0, 8);
+    // ちょび髭
+    ctx.beginPath();
+    ctx.roundRect ? ctx.roundRect(-6, 12, 12, 6, 2) : ctx.rect(-6, 12, 12, 6);
+    fillInk(ctx, "#2b2b2b", 2);
+    // 叫んでいる口
+    ctx.beginPath(); ctx.ellipse(0, 26, 9, 8, 0, 0, Math.PI * 2); fillInk(ctx, "#7d3a3a", 2.4);
+    ctx.beginPath(); ctx.ellipse(0, 30, 4.5, 3, 0, 0, Math.PI * 2); ctx.fillStyle = "#c96a6a"; ctx.fill();
+    // 怒りマーク
+    ctx.strokeStyle = "#d33"; ctx.lineWidth = 2.6;
+    ctx.beginPath();
+    ctx.moveTo(24, -30); ctx.lineTo(34, -30); ctx.moveTo(29, -35); ctx.lineTo(29, -25);
+    ctx.moveTo(26, -35); ctx.lineTo(32, -25); ctx.moveTo(32, -35); ctx.lineTo(26, -25);
+    ctx.stroke();
+    speech(ctx, 6, -62, "ヤマウラーー！！！", 132);
+  }
+
+  function drawEbi(ctx) {
+    var SKIN = "#f7cba4", HAIR = "#e8c34a";
+    // 細い脚
+    ctx.strokeStyle = INK; ctx.lineWidth = 11; ctx.lineCap = "round";
+    ctx.beginPath(); ctx.moveTo(-8, 96); ctx.lineTo(-12, 172); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(8, 96); ctx.lineTo(12, 172); ctx.stroke();
+    ctx.strokeStyle = SKIN; ctx.lineWidth = 7;
+    ctx.beginPath(); ctx.moveTo(-8, 96); ctx.lineTo(-12, 172); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(8, 96); ctx.lineTo(12, 172); ctx.stroke();
+    ctx.beginPath(); ctx.ellipse(-13, 178, 10, 7, 0, 0, Math.PI * 2); fillInk(ctx, "#2c2c34", 2.2);
+    ctx.beginPath(); ctx.ellipse(13, 178, 10, 7, 0, 0, Math.PI * 2); fillInk(ctx, "#2c2c34", 2.2);
+    // 細い胴（ワンピース）
+    ctx.beginPath();
+    ctx.moveTo(-19, 44); ctx.quadraticCurveTo(-16, 76, -21, 100);
+    ctx.lineTo(21, 100); ctx.quadraticCurveTo(16, 76, 19, 44);
+    ctx.quadraticCurveTo(0, 34, -19, 44); ctx.closePath();
+    fillInk(ctx, "#e2789f", 2.6);
+    ctx.beginPath(); ctx.moveTo(-20, 74); ctx.lineTo(20, 74);
+    ctx.strokeStyle = "#c25c81"; ctx.lineWidth = 3; ctx.stroke();
+    // 細い腕＋ドラムスティック
+    ctx.strokeStyle = INK; ctx.lineWidth = 10; ctx.lineCap = "round";
+    ctx.beginPath(); ctx.moveTo(-19, 50); ctx.quadraticCurveTo(-38, 44, -44, 22); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(19, 50); ctx.quadraticCurveTo(38, 46, 45, 26); ctx.stroke();
+    ctx.strokeStyle = SKIN; ctx.lineWidth = 6.5;
+    ctx.beginPath(); ctx.moveTo(-19, 50); ctx.quadraticCurveTo(-38, 44, -44, 22); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(19, 50); ctx.quadraticCurveTo(38, 46, 45, 26); ctx.stroke();
+    ctx.beginPath(); ctx.arc(-45, 18, 6, 0, Math.PI * 2); fillInk(ctx, SKIN, 2);
+    ctx.beginPath(); ctx.arc(46, 22, 6, 0, Math.PI * 2); fillInk(ctx, SKIN, 2);
+    // スティック
+    ctx.strokeStyle = INK; ctx.lineWidth = 6;
+    ctx.beginPath(); ctx.moveTo(-45, 18); ctx.lineTo(-62, -14); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(46, 22); ctx.lineTo(62, -10); ctx.stroke();
+    ctx.strokeStyle = "#d8b47a"; ctx.lineWidth = 3.4;
+    ctx.beginPath(); ctx.moveTo(-45, 18); ctx.lineTo(-62, -14); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(46, 22); ctx.lineTo(62, -10); ctx.stroke();
+    // 首
+    ctx.beginPath(); ctx.rect(-6, 24, 12, 14); fillInk(ctx, "#eec096", 2.2);
+    // 顔
+    faceShape(ctx, 29); fillInk(ctx, SKIN, 2.6);
+    // 金髪ロング（後ろ髪）
+    ctx.beginPath();
+    ctx.moveTo(-30, -2); ctx.bezierCurveTo(-44, 24, -42, 64, -32, 86);
+    ctx.lineTo(-18, 74); ctx.bezierCurveTo(-24, 44, -24, 18, -20, -2);
+    ctx.closePath(); fillInk(ctx, "#d9b23f", 2.4);
+    ctx.beginPath();
+    ctx.moveTo(30, -2); ctx.bezierCurveTo(44, 24, 42, 64, 32, 86);
+    ctx.lineTo(18, 74); ctx.bezierCurveTo(24, 44, 24, 18, 20, -2);
+    ctx.closePath(); fillInk(ctx, "#d9b23f", 2.4);
+    // 前髪
+    ctx.beginPath();
+    ctx.moveTo(-31, 4);
+    ctx.bezierCurveTo(-36, -30, -14, -42, 2, -40);
+    ctx.bezierCurveTo(22, -38, 33, -22, 31, 4);
+    ctx.lineTo(24, -2);
+    ctx.bezierCurveTo(22, -16, 10, -22, 2, -18);
+    ctx.bezierCurveTo(-8, -14, -12, -4, -16, 4);
+    ctx.bezierCurveTo(-22, -2, -27, 0, -31, 4);
+    ctx.closePath(); fillInk(ctx, HAIR, 2.4);
+    hairShine(ctx, 6, -26, 13, 4, "rgba(255,255,255,0.5)");
+    brow(ctx, -12, -14, 7, -1, 2.6);
+    brow(ctx, 12, -14, 7, 1, 2.6);
+    eye(ctx, -12, -1, 7.5, 8, 0);
+    // ウインク
+    ctx.beginPath(); ctx.arc(12, 2, 8, Math.PI * 1.12, Math.PI * 1.88);
+    ctx.strokeStyle = INK; ctx.lineWidth = 3; ctx.stroke();
+    nose(ctx, 0, 8);
+    mouthSmile(ctx, 0, 14, 7);
+    blush(ctx, -21, 8); blush(ctx, 21, 8);
+  }
+
+  function drawTakehiko(ctx) {
+    var SKIN = "#f2c49b", TEE = "#6fa8dc";
+    ctx.beginPath();
+    ctx.moveTo(-20, 96); ctx.lineTo(-22, 174); ctx.lineTo(-5, 174); ctx.lineTo(-2, 100);
+    ctx.lineTo(2, 100); ctx.lineTo(5, 174); ctx.lineTo(22, 174); ctx.lineTo(20, 96);
+    ctx.closePath(); fillInk(ctx, "#3a4152", 2.4);
+    ctx.beginPath(); ctx.ellipse(-14, 180, 12, 7, 0, 0, Math.PI * 2); fillInk(ctx, "#e8e4d8", 2.4);
+    ctx.beginPath(); ctx.ellipse(14, 180, 12, 7, 0, 0, Math.PI * 2); fillInk(ctx, "#e8e4d8", 2.4);
+    ctx.beginPath();
+    ctx.moveTo(-28, 44); ctx.quadraticCurveTo(-31, 76, -26, 100);
+    ctx.lineTo(26, 100); ctx.quadraticCurveTo(31, 76, 28, 44);
+    ctx.quadraticCurveTo(0, 33, -28, 44); ctx.closePath();
+    fillInk(ctx, TEE, 2.6);
+    // ギター（構えている）
+    ctx.save(); ctx.translate(6, 84); ctx.rotate(-0.3);
+    ctx.beginPath(); ctx.ellipse(0, 0, 22, 17, 0, 0, Math.PI * 2); fillInk(ctx, "#d9534f", 2.6);
+    ctx.beginPath(); ctx.ellipse(2, -2, 5, 5, 0, 0, Math.PI * 2); fillInk(ctx, "#2a1810", 2);
+    ctx.beginPath(); ctx.rect(-3, -70, 7, 54); fillInk(ctx, "#c9a06a", 2.4);
+    ctx.beginPath(); ctx.rect(-5.5, -82, 11, 13); fillInk(ctx, "#2a1810", 2.2);
+    ctx.strokeStyle = "rgba(255,255,255,0.6)"; ctx.lineWidth = 0.9;
+    for (var i = -2; i <= 2; i++) {
+      ctx.beginPath(); ctx.moveTo(i * 1.4, -68); ctx.lineTo(i * 1.4, 6); ctx.stroke();
+    }
+    ctx.restore();
+    // 腕
+    ctx.strokeStyle = INK; ctx.lineWidth = 14; ctx.lineCap = "round";
+    ctx.beginPath(); ctx.moveTo(-27, 52); ctx.quadraticCurveTo(-40, 70, -26, 82); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(27, 52); ctx.quadraticCurveTo(40, 74, 24, 90); ctx.stroke();
+    ctx.strokeStyle = TEE; ctx.lineWidth = 10;
+    ctx.beginPath(); ctx.moveTo(-27, 52); ctx.quadraticCurveTo(-40, 70, -26, 82); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(27, 52); ctx.quadraticCurveTo(40, 74, 24, 90); ctx.stroke();
+    ctx.beginPath(); ctx.arc(-24, 84, 7, 0, Math.PI * 2); fillInk(ctx, SKIN, 2.2);
+    ctx.beginPath(); ctx.arc(22, 92, 7, 0, Math.PI * 2); fillInk(ctx, SKIN, 2.2);
+    ctx.beginPath(); ctx.rect(-7, 24, 14, 16); fillInk(ctx, "#e0ab84", 2.2);
+    ear(ctx, -30, 4, 1); ear(ctx, 30, 4, 1);
+    faceShape(ctx, 30); fillInk(ctx, SKIN, 2.6);
+    // もじゃもじゃ長め髪（目にかからない高さで毛先を切る）
+    ctx.beginPath();
+    ctx.moveTo(-32, -2);
+    ctx.bezierCurveTo(-42, -24, -22, -44, 0, -42);
+    ctx.bezierCurveTo(24, -40, 40, -22, 32, -2);
+    ctx.lineTo(26, -13); ctx.lineTo(20, -4); ctx.lineTo(14, -15); ctx.lineTo(8, -5);
+    ctx.lineTo(2, -16); ctx.lineTo(-5, -5); ctx.lineTo(-12, -15); ctx.lineTo(-19, -4);
+    ctx.lineTo(-25, -13); ctx.closePath();
+    fillInk(ctx, "#2b2b2b", 2.4);
+    // 跳ねた毛先
+    [[-34, -14, -46, -26], [34, -14, 46, -26], [-16, -40, -22, -54], [16, -40, 22, -54]].forEach(function (s) {
+      ctx.beginPath(); ctx.moveTo(s[0], s[1]);
+      ctx.quadraticCurveTo((s[0] + s[2]) / 2 - 4, (s[1] + s[3]) / 2, s[2], s[3]);
+      ctx.strokeStyle = INK; ctx.lineWidth = 6; ctx.lineCap = "round"; ctx.stroke();
+      ctx.strokeStyle = "#2b2b2b"; ctx.lineWidth = 4; ctx.stroke();
+    });
+    hairShine(ctx, 8, -28, 11, 3.4, "rgba(255,255,255,0.26)");
+    eyeSmile(ctx, -12, 3, 8);
+    eyeSmile(ctx, 12, 3, 8);
+    nose(ctx, 0, 10);
+    mouthGrin(ctx, 0, 16, 10, 6);
+  }
+
+  function drawHashidate(ctx) {
+    var SKIN = "#f2c49b", TEE = "#c98a4b";
+    // 脚（短パン＝すね毛が見える）
+    ctx.beginPath();
+    ctx.moveTo(-22, 96); ctx.lineTo(-24, 132); ctx.lineTo(-6, 132); ctx.lineTo(-3, 100);
+    ctx.lineTo(3, 100); ctx.lineTo(6, 132); ctx.lineTo(24, 132); ctx.lineTo(22, 96);
+    ctx.closePath(); fillInk(ctx, "#4a5468", 2.4);
+    ctx.strokeStyle = INK; ctx.lineWidth = 12; ctx.lineCap = "round";
+    ctx.beginPath(); ctx.moveTo(-15, 130); ctx.lineTo(-16, 170); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(15, 130); ctx.lineTo(16, 170); ctx.stroke();
+    ctx.strokeStyle = SKIN; ctx.lineWidth = 8.5;
+    ctx.beginPath(); ctx.moveTo(-15, 130); ctx.lineTo(-16, 170); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(15, 130); ctx.lineTo(16, 170); ctx.stroke();
+    // すね毛（片脚だけ処理済み＝ツルツル）
+    ctx.strokeStyle = "#3a2a1a"; ctx.lineWidth = 1.4; ctx.lineCap = "round";
+    for (var i = 0; i < 7; i++) {
+      var yy = 138 + i * 4.5;
+      ctx.beginPath(); ctx.moveTo(-19, yy); ctx.lineTo(-23, yy - 3); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(-12, yy + 2); ctx.lineTo(-8, yy - 1); ctx.stroke();
+    }
+    ctx.beginPath(); ctx.ellipse(-16, 176, 11, 7, 0, 0, Math.PI * 2); fillInk(ctx, "#e8e4d8", 2.2);
+    ctx.beginPath(); ctx.ellipse(16, 176, 11, 7, 0, 0, Math.PI * 2); fillInk(ctx, "#e8e4d8", 2.2);
+    // ツルツルの方に光沢
+    ctx.beginPath(); ctx.ellipse(16, 148, 2.4, 9, 0, 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(255,255,255,0.75)"; ctx.fill();
+    // 胴（ぽっちゃり寄り）
+    ctx.beginPath();
+    ctx.moveTo(-32, 44); ctx.quadraticCurveTo(-40, 78, -30, 102);
+    ctx.lineTo(30, 102); ctx.quadraticCurveTo(40, 78, 32, 44);
+    ctx.quadraticCurveTo(0, 32, -32, 44); ctx.closePath();
+    fillInk(ctx, TEE, 2.6);
+    // 腕（片手にシェーバー）
+    ctx.strokeStyle = INK; ctx.lineWidth = 15; ctx.lineCap = "round";
+    ctx.beginPath(); ctx.moveTo(-30, 52); ctx.quadraticCurveTo(-48, 68, -44, 94); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(30, 52); ctx.quadraticCurveTo(50, 48, 52, 24); ctx.stroke();
+    ctx.strokeStyle = TEE; ctx.lineWidth = 11;
+    ctx.beginPath(); ctx.moveTo(-30, 52); ctx.quadraticCurveTo(-48, 68, -44, 94); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(30, 52); ctx.quadraticCurveTo(50, 48, 52, 24); ctx.stroke();
+    ctx.beginPath(); ctx.arc(-44, 98, 7, 0, Math.PI * 2); fillInk(ctx, SKIN, 2.2);
+    ctx.beginPath(); ctx.arc(53, 18, 7.5, 0, Math.PI * 2); fillInk(ctx, SKIN, 2.2);
+    // シェーバー
+    ctx.save(); ctx.translate(56, 6); ctx.rotate(0.3);
+    ctx.beginPath(); ctx.rect(-6, -16, 12, 20); fillInk(ctx, "#4aa3c9", 2.2);
+    ctx.beginPath(); ctx.rect(-7, -20, 14, 5); fillInk(ctx, "#dfe4ea", 2.2);
+    ctx.restore();
+    ctx.beginPath(); ctx.rect(-8, 24, 16, 16); fillInk(ctx, "#e0ab84", 2.2);
+    ear(ctx, -31, 4, 1); ear(ctx, 31, 4, 1);
+    faceShape(ctx, 31); fillInk(ctx, SKIN, 2.6);
+    // パーマ（丸いカール群）
+    ctx.beginPath();
+    ctx.moveTo(-33, 6); ctx.bezierCurveTo(-38, -26, -18, -44, 0, -42);
+    ctx.bezierCurveTo(20, -40, 38, -24, 33, 8);
+    ctx.bezierCurveTo(20, -6, -20, -6, -33, 6);
+    ctx.closePath(); fillInk(ctx, "#4a3218", 2.4);
+    var curls = [[-28,-14],[-19,-28],[-6,-36],[8,-36],[21,-27],[29,-13],[-24,-2],[26,-2]];
+    curls.forEach(function (c) {
+      ctx.beginPath(); ctx.arc(c[0], c[1], 8.5, 0, Math.PI * 2);
+      fillInk(ctx, "#4a3218", 2.2);
+      ctx.beginPath(); ctx.arc(c[0] - 2.5, c[1] - 2.5, 2.6, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(255,255,255,0.3)"; ctx.fill();
+    });
+    brow(ctx, -13, -10, 8, -1, 2.8);
+    brow(ctx, 13, -10, 8, 1, 2.8);
+    eye(ctx, -13, 2, 7.5, 7.5, 1);
+    eye(ctx, 13, 2, 7.5, 7.5, -1);
+    nose(ctx, 0, 12);
+    mouthGrin(ctx, 0, 18, 11, 7);
+    blush(ctx, -22, 12); blush(ctx, 22, 12);
+    speech(ctx, 4, -66, "もてたい！", 96);
+  }
+
+  function drawYoshino(ctx) {
+    var SKIN = "#f4d0b0";
+    ctx.beginPath();
+    ctx.moveTo(-20, 96); ctx.lineTo(-22, 174); ctx.lineTo(-5, 174); ctx.lineTo(-2, 100);
+    ctx.lineTo(2, 100); ctx.lineTo(5, 174); ctx.lineTo(22, 174); ctx.lineTo(20, 96);
+    ctx.closePath(); fillInk(ctx, "#3d434e", 2.4);
+    ctx.beginPath(); ctx.ellipse(-14, 180, 12, 7, 0, 0, Math.PI * 2); fillInk(ctx, "#8a8f98", 2.4);
+    ctx.beginPath(); ctx.ellipse(14, 180, 12, 7, 0, 0, Math.PI * 2); fillInk(ctx, "#8a8f98", 2.4);
+    ctx.beginPath();
+    ctx.moveTo(-27, 44); ctx.quadraticCurveTo(-30, 76, -26, 100);
+    ctx.lineTo(26, 100); ctx.quadraticCurveTo(30, 76, 27, 44);
+    ctx.quadraticCurveTo(0, 33, -27, 44); ctx.closePath();
+    fillInk(ctx, "#9aa0aa", 2.6);
+    // 腕＋スティック（手首が固いのでカクカク）
+    ctx.strokeStyle = INK; ctx.lineWidth = 14; ctx.lineCap = "round"; ctx.lineJoin = "miter";
+    ctx.beginPath(); ctx.moveTo(-26, 52); ctx.lineTo(-42, 62); ctx.lineTo(-40, 40); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(26, 52); ctx.lineTo(42, 62); ctx.lineTo(40, 40); ctx.stroke();
+    ctx.strokeStyle = "#9aa0aa"; ctx.lineWidth = 10;
+    ctx.beginPath(); ctx.moveTo(-26, 52); ctx.lineTo(-42, 62); ctx.lineTo(-40, 40); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(26, 52); ctx.lineTo(42, 62); ctx.lineTo(40, 40); ctx.stroke();
+    ctx.beginPath(); ctx.arc(-40, 36, 6.5, 0, Math.PI * 2); fillInk(ctx, SKIN, 2.2);
+    ctx.beginPath(); ctx.arc(40, 36, 6.5, 0, Math.PI * 2); fillInk(ctx, SKIN, 2.2);
+    ctx.strokeStyle = INK; ctx.lineWidth = 6;
+    ctx.beginPath(); ctx.moveTo(-40, 36); ctx.lineTo(-52, 6); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(40, 36); ctx.lineTo(52, 6); ctx.stroke();
+    ctx.strokeStyle = "#d8b47a"; ctx.lineWidth = 3.4;
+    ctx.beginPath(); ctx.moveTo(-40, 36); ctx.lineTo(-52, 6); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(40, 36); ctx.lineTo(52, 6); ctx.stroke();
+    // 手首カクカク記号
+    ctx.strokeStyle = "#d33"; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(-40, 36, 12, -0.4, 1.2); ctx.stroke();
+    ctx.beginPath(); ctx.arc(40, 36, 12, 1.9, 3.5); ctx.stroke();
+    ctx.beginPath(); ctx.rect(-7, 24, 14, 16); fillInk(ctx, "#e6bd99", 2.2);
+    ear(ctx, -29, 4, 1); ear(ctx, 29, 4, 1);
+    // 顔（やや面長・鳥っぽい）
+    ctx.save(); ctx.scale(0.92, 1.08);
+    faceShape(ctx, 29); fillInk(ctx, SKIN, 2.6);
+    ctx.restore();
+    // 鳥の巣ヘア
+    ctx.beginPath();
+    ctx.moveTo(-30, 4);
+    ctx.bezierCurveTo(-38, -26, -18, -40, 0, -38);
+    ctx.bezierCurveTo(20, -36, 38, -24, 30, 6);
+    ctx.bezierCurveTo(18, -8, -18, -8, -30, 4);
+    ctx.closePath(); fillInk(ctx, "#6b6f78", 2.4);
+    [[-30,-10,-44,-20],[-16,-34,-22,-50],[0,-40,2,-56],[16,-34,24,-48],[30,-10,44,-18],[-24,-24,-36,-34],[24,-24,36,-32]].forEach(function (s) {
+      ctx.beginPath(); ctx.moveTo(s[0], s[1]);
+      ctx.quadraticCurveTo((s[0]+s[2])/2 + 3, (s[1]+s[3])/2 - 3, s[2], s[3]);
+      ctx.strokeStyle = INK; ctx.lineWidth = 6; ctx.lineCap = "round"; ctx.stroke();
+      ctx.strokeStyle = "#6b6f78"; ctx.lineWidth = 3.8; ctx.stroke();
+    });
+    brow(ctx, -12, -14, 7, 3, 3);
+    brow(ctx, 12, -14, 7, -3, 3);
+    eye(ctx, -12, -2, 6.5, 6, 0);
+    eye(ctx, 12, -2, 6.5, 6, 0);
+    // 四角メガネ
+    ctx.strokeStyle = INK; ctx.lineWidth = 2.6;
+    ctx.beginPath();
+    ctx.roundRect ? ctx.roundRect(-22, -10, 20, 16, 2) : ctx.rect(-22, -10, 20, 16); ctx.stroke();
+    ctx.beginPath();
+    ctx.roundRect ? ctx.roundRect(2, -10, 20, 16, 2) : ctx.rect(2, -10, 20, 16); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(-2, -3); ctx.lineTo(2, -3); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(-22, -4); ctx.lineTo(-28, -2); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(22, -4); ctx.lineTo(28, -2); ctx.stroke();
+    // くちばし
+    ctx.beginPath();
+    ctx.moveTo(-7, 10); ctx.lineTo(14, 15); ctx.lineTo(-7, 21); ctx.closePath();
+    fillInk(ctx, "#e0a030", 2.4);
+    ctx.beginPath(); ctx.moveTo(-7, 15.5); ctx.lineTo(13, 15.5);
+    ctx.strokeStyle = INK; ctx.lineWidth = 1.6; ctx.stroke();
+  }
+
+  function drawFuse(ctx) {
+    var SKIN = "#f2c49b", TOP = "#6f9f6f";
+    ctx.beginPath();
+    ctx.moveTo(-20, 96); ctx.lineTo(-22, 174); ctx.lineTo(-5, 174); ctx.lineTo(-2, 100);
+    ctx.lineTo(2, 100); ctx.lineTo(5, 174); ctx.lineTo(22, 174); ctx.lineTo(20, 96);
+    ctx.closePath(); fillInk(ctx, "#33383f", 2.4);
+    ctx.beginPath(); ctx.ellipse(-14, 180, 12, 7, 0, 0, Math.PI * 2); fillInk(ctx, "#20242a", 2.4);
+    ctx.beginPath(); ctx.ellipse(14, 180, 12, 7, 0, 0, Math.PI * 2); fillInk(ctx, "#20242a", 2.4);
+    ctx.beginPath();
+    ctx.moveTo(-28, 44); ctx.quadraticCurveTo(-31, 76, -27, 100);
+    ctx.lineTo(27, 100); ctx.quadraticCurveTo(31, 76, 28, 44);
+    ctx.quadraticCurveTo(0, 33, -28, 44); ctx.closePath();
+    fillInk(ctx, TOP, 2.6);
+    // 腕（弁当箱を抱える）
+    ctx.strokeStyle = INK; ctx.lineWidth = 14; ctx.lineCap = "round";
+    ctx.beginPath(); ctx.moveTo(-27, 54); ctx.quadraticCurveTo(-36, 76, -20, 84); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(27, 54); ctx.quadraticCurveTo(36, 76, 20, 84); ctx.stroke();
+    ctx.strokeStyle = TOP; ctx.lineWidth = 10;
+    ctx.beginPath(); ctx.moveTo(-27, 54); ctx.quadraticCurveTo(-36, 76, -20, 84); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(27, 54); ctx.quadraticCurveTo(36, 76, 20, 84); ctx.stroke();
+    // 弁当箱の山
+    ctx.beginPath(); ctx.rect(-22, 66, 44, 13); fillInk(ctx, "#dcdcdc", 2.4);
+    ctx.beginPath(); ctx.rect(-18, 54, 36, 13); fillInk(ctx, "#c9ccd2", 2.4);
+    ctx.beginPath(); ctx.rect(-13, 42, 26, 13); fillInk(ctx, "#dcdcdc", 2.4);
+    ctx.beginPath(); ctx.arc(-20, 88, 7, 0, Math.PI * 2); fillInk(ctx, SKIN, 2.2);
+    ctx.beginPath(); ctx.arc(20, 88, 7, 0, Math.PI * 2); fillInk(ctx, SKIN, 2.2);
+    // 切符（キセル）
+    ctx.save(); ctx.translate(40, 44); ctx.rotate(-0.25);
+    ctx.beginPath(); ctx.rect(-11, -7, 22, 14); fillInk(ctx, "#f4e9c8", 2.2);
+    ctx.fillStyle = INK; ctx.font = "bold 7px sans-serif"; ctx.textAlign = "center";
+    ctx.fillText("140", 0, 2.5);
+    ctx.restore();
+    ctx.beginPath(); ctx.rect(-7, 24, 14, 16); fillInk(ctx, "#e0ab84", 2.2);
+    ear(ctx, -29, 4, 1); ear(ctx, 29, 4, 1);
+    faceShape(ctx, 29); fillInk(ctx, SKIN, 2.6);
+    // 美容師仕上げのきれいな七三
+    ctx.beginPath();
+    ctx.moveTo(-30, 2);
+    ctx.bezierCurveTo(-33, -28, -12, -40, 4, -38);
+    ctx.bezierCurveTo(24, -36, 32, -22, 30, 2);
+    ctx.lineTo(23, -4);
+    ctx.bezierCurveTo(20, -18, 0, -24, -10, -14);
+    ctx.bezierCurveTo(-16, -8, -24, -6, -30, 2);
+    ctx.closePath(); fillInk(ctx, "#241f1a", 2.4);
+    hairShine(ctx, 9, -26, 13, 4, "rgba(255,255,255,0.42)");
+    ctx.beginPath(); ctx.moveTo(-7, -32); ctx.lineTo(-2, -20);
+    ctx.strokeStyle = "rgba(255,255,255,0.35)"; ctx.lineWidth = 2; ctx.stroke();
+    brow(ctx, -12, -14, 7, -1, 2.8);
+    brow(ctx, 12, -14, 7, 1, 2.8);
+    eyeSharp(ctx, -12, -1, 6.5, 5, 0);
+    eyeSharp(ctx, 12, -1, 6.5, 5, 0);
+    nose(ctx, 0, 8);
+    mouthFlat(ctx, 0, 16, 7);
+  }
+
+  function drawCoop(ctx) {
+    var SKIN = "#f2c49b", APRON = "#e8ebf0", UNI = "#4d7ec8";
+    ctx.beginPath();
+    ctx.moveTo(-20, 96); ctx.lineTo(-22, 174); ctx.lineTo(-5, 174); ctx.lineTo(-2, 100);
+    ctx.lineTo(2, 100); ctx.lineTo(5, 174); ctx.lineTo(22, 174); ctx.lineTo(20, 96);
+    ctx.closePath(); fillInk(ctx, "#3a4152", 2.4);
+    ctx.beginPath(); ctx.ellipse(-14, 180, 12, 7, 0, 0, Math.PI * 2); fillInk(ctx, "#e8e4d8", 2.4);
+    ctx.beginPath(); ctx.ellipse(14, 180, 12, 7, 0, 0, Math.PI * 2); fillInk(ctx, "#e8e4d8", 2.4);
+    ctx.beginPath();
+    ctx.moveTo(-28, 44); ctx.quadraticCurveTo(-31, 76, -27, 100);
+    ctx.lineTo(27, 100); ctx.quadraticCurveTo(31, 76, 28, 44);
+    ctx.quadraticCurveTo(0, 33, -28, 44); ctx.closePath();
+    fillInk(ctx, UNI, 2.6);
+    // エプロン
+    ctx.beginPath();
+    ctx.moveTo(-16, 44); ctx.lineTo(-20, 100); ctx.lineTo(20, 100); ctx.lineTo(16, 44);
+    ctx.quadraticCurveTo(0, 38, -16, 44); ctx.closePath();
+    fillInk(ctx, APRON, 2.4);
+    ctx.beginPath(); ctx.moveTo(-20, 72); ctx.lineTo(20, 72);
+    ctx.strokeStyle = "#b9c0cc"; ctx.lineWidth = 2.4; ctx.stroke();
+    ctx.fillStyle = "#d33"; ctx.font = "bold 11px sans-serif"; ctx.textAlign = "center";
+    ctx.fillText("試食", 0, 62);
+    // 腕＋トレー
+    ctx.strokeStyle = INK; ctx.lineWidth = 14; ctx.lineCap = "round";
+    ctx.beginPath(); ctx.moveTo(-27, 52); ctx.quadraticCurveTo(-44, 56, -46, 34); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(27, 52); ctx.quadraticCurveTo(42, 70, 34, 90); ctx.stroke();
+    ctx.strokeStyle = UNI; ctx.lineWidth = 10;
+    ctx.beginPath(); ctx.moveTo(-27, 52); ctx.quadraticCurveTo(-44, 56, -46, 34); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(27, 52); ctx.quadraticCurveTo(42, 70, 34, 90); ctx.stroke();
+    ctx.beginPath(); ctx.arc(-47, 30, 7, 0, Math.PI * 2); fillInk(ctx, SKIN, 2.2);
+    ctx.beginPath(); ctx.arc(34, 94, 7, 0, Math.PI * 2); fillInk(ctx, SKIN, 2.2);
+    // 試食トレー
+    ctx.save(); ctx.translate(-50, 18);
+    ctx.beginPath(); ctx.ellipse(0, 0, 24, 8, 0, 0, Math.PI * 2); fillInk(ctx, "#cfd4dc", 2.4);
+    [-13, -4, 5, 14].forEach(function (x, i) {
+      ctx.beginPath(); ctx.arc(x, -4, 4.2, 0, Math.PI * 2);
+      fillInk(ctx, i % 2 ? "#e0713f" : "#d9a441", 1.8);
+      ctx.beginPath(); ctx.moveTo(x, -8); ctx.lineTo(x + 2, -16);
+      ctx.strokeStyle = "#c9a06a"; ctx.lineWidth = 1.8; ctx.stroke();
+    });
+    ctx.restore();
+    ctx.beginPath(); ctx.rect(-7, 24, 14, 16); fillInk(ctx, "#e0ab84", 2.2);
+    ear(ctx, -29, 4, 1); ear(ctx, 29, 4, 1);
+    faceShape(ctx, 29); fillInk(ctx, SKIN, 2.6);
+    // まとめ髪
+    ctx.beginPath();
+    ctx.moveTo(-30, 2); ctx.bezierCurveTo(-34, -30, -12, -40, 2, -38);
+    ctx.bezierCurveTo(22, -36, 32, -22, 30, 2);
+    ctx.bezierCurveTo(18, -12, -18, -12, -30, 2);
+    ctx.closePath(); fillInk(ctx, "#4a3a2a", 2.4);
+    ctx.beginPath(); ctx.arc(0, -34, 11, 0, Math.PI * 2); fillInk(ctx, "#4a3a2a", 2.4);
+    // 三角巾
+    ctx.beginPath();
+    ctx.moveTo(-31, -6); ctx.quadraticCurveTo(0, -30, 31, -6);
+    ctx.quadraticCurveTo(0, -18, -31, -6); ctx.closePath();
+    fillInk(ctx, "#f4f6fa", 2.4);
+    hairShine(ctx, 8, -20, 9, 3, "rgba(255,255,255,0.3)");
+    brow(ctx, -12, -12, 7, -1, 2.6);
+    brow(ctx, 12, -12, 7, 1, 2.6);
+    eyeSmile(ctx, -12, 0, 7.5);
+    eyeSmile(ctx, 12, 0, 7.5);
+    nose(ctx, 0, 8);
+    mouthGrin(ctx, 0, 14, 9, 5);
+    speech(ctx, 8, -60, "いかがですかー？", 118);
+  }
+
+  // ---------- アイテム ----------
+  function cdBase(ctx, labelColor, title, sub) {
+    ctx.beginPath(); ctx.arc(0, 0, 62, 0, Math.PI * 2);
+    fillInk(ctx, "#e9edf2", 3);
+    ctx.beginPath(); ctx.arc(0, 0, 62, 0, Math.PI * 2);
+    var g = ctx.createLinearGradient(-62, -62, 62, 62);
+    g.addColorStop(0, "rgba(120,200,255,0.55)");
+    g.addColorStop(0.35, "rgba(255,255,255,0.05)");
+    g.addColorStop(0.6, "rgba(255,170,220,0.45)");
+    g.addColorStop(1, "rgba(160,255,200,0.5)");
+    ctx.fillStyle = g; ctx.fill();
+    ctx.beginPath(); ctx.arc(0, 0, 38, 0, Math.PI * 2);
+    fillInk(ctx, labelColor, 2.6);
+    ctx.beginPath(); ctx.arc(0, 0, 10, 0, Math.PI * 2);
+    fillInk(ctx, "#f4f1e8", 2.4);
+    ctx.fillStyle = "#fff";
+    ctx.textAlign = "center";
+    ctx.font = "bold 13px sans-serif";
+    ctx.fillText(title, 0, -20);
+    ctx.font = "10px sans-serif";
+    ctx.fillStyle = "rgba(255,255,255,0.85)";
+    ctx.fillText(sub, 0, 26);
+  }
+  function drawCdStraightener(ctx) { cdBase(ctx, "#2f4f7f", "STRAIGHTENER", "ストレイテナー"); }
+  function drawCdBandApart(ctx) { cdBase(ctx, "#7a3030", "the band apart", "バンアパ"); }
+  function drawCdAjikan(ctx) { cdBase(ctx, "#2f6b4a", "ASIAN KUNG-FU", "アジカン"); }
+
+  function drawShoes(ctx) {
+    // フレッドペリー風のテニスシューズ側面（BANGSで購入した一足）
+    ctx.save(); ctx.translate(0, 6);
+
+    // アッパー（つま先→甲→履き口→かかと）
+    ctx.beginPath();
+    ctx.moveTo(-64, 20);
+    ctx.quadraticCurveTo(-64, 2, -44, -6);      // つま先の甲
+    ctx.lineTo(-14, -16);                        // 甲のライン
+    ctx.lineTo(20, -20);
+    ctx.quadraticCurveTo(34, -22, 40, -34);      // 履き口の立ち上がり
+    ctx.quadraticCurveTo(52, -32, 56, -10);      // かかと
+    ctx.quadraticCurveTo(60, 8, 58, 20);
+    ctx.closePath();
+    fillInk(ctx, "#fbfaf5", 3);
+
+    // つま先のトゥキャップ
+    ctx.beginPath();
+    ctx.moveTo(-64, 20);
+    ctx.quadraticCurveTo(-64, 2, -44, -6);
+    ctx.quadraticCurveTo(-34, 6, -32, 20);
+    ctx.closePath();
+    fillInk(ctx, "#f1eee4", 2.4);
+
+    // 履き口（アンクルカラー）
+    ctx.beginPath();
+    ctx.ellipse(30, -24, 15, 7, -0.22, 0, Math.PI * 2);
+    fillInk(ctx, "#e6e2d6", 2.4);
+
+    // シューレース部分の台形パネル
+    ctx.beginPath();
+    ctx.moveTo(-12, -15); ctx.lineTo(18, -19); ctx.lineTo(22, -4); ctx.lineTo(-8, 0);
+    ctx.closePath();
+    fillInk(ctx, "#f1eee4", 2.2);
+
+    // 靴紐（クロス）
+    ctx.strokeStyle = INK; ctx.lineWidth = 2.6; ctx.lineCap = "round";
+    for (var i = 0; i < 3; i++) {
+      var x = -8 + i * 10, dy = -i * 1.2;
+      ctx.beginPath(); ctx.moveTo(x, -12 + dy); ctx.lineTo(x + 9, -2 + dy); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(x + 9, -13 + dy); ctx.lineTo(x, -3 + dy); ctx.stroke();
+    }
+    // ハトメ
+    ctx.fillStyle = INK;
+    for (var k = 0; k < 3; k++) {
+      ctx.beginPath(); ctx.arc(-9 + k * 10, -13 - k * 1.2, 1.6, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(-1 + k * 10, -2 - k * 1.2, 1.6, 0, Math.PI * 2); ctx.fill();
+    }
+
+    // ソール（白いラバー）
+    ctx.beginPath();
+    ctx.moveTo(-66, 18);
+    ctx.quadraticCurveTo(-70, 30, -56, 34);
+    ctx.lineTo(50, 34);
+    ctx.quadraticCurveTo(62, 32, 60, 18);
+    ctx.closePath();
+    fillInk(ctx, "#ffffff", 2.8);
+    ctx.beginPath(); ctx.moveTo(-64, 25); ctx.lineTo(58, 25);
+    ctx.strokeStyle = "#c9ccd2"; ctx.lineWidth = 2; ctx.stroke();
+
+    // サイドの2本ライン（フレッドペリーらしい配色）
+    ctx.strokeStyle = "#1d3f7a"; ctx.lineWidth = 3.2; ctx.lineCap = "round";
+    ctx.beginPath(); ctx.moveTo(-26, 8); ctx.quadraticCurveTo(6, 2, 40, 4); ctx.stroke();
+    ctx.strokeStyle = "#b03636";
+    ctx.beginPath(); ctx.moveTo(-26, 14); ctx.quadraticCurveTo(6, 8, 40, 10); ctx.stroke();
+
+    // 月桂樹リース（フレッドペリーのアイコン）
+    ctx.save(); ctx.translate(40, -6);
+    ctx.strokeStyle = "#1f5c3d"; ctx.lineWidth = 1.8;
+    ctx.beginPath(); ctx.arc(0, 0, 8.5, Math.PI * 0.62, Math.PI * 2.38); ctx.stroke();
+    for (var j = 0; j < 9; j++) {
+      var a = Math.PI * 0.62 + j * 0.2;
+      ctx.save();
+      ctx.translate(Math.cos(a) * 8.5, Math.sin(a) * 8.5);
+      ctx.rotate(a + Math.PI / 2);
+      ctx.beginPath(); ctx.ellipse(0, 0, 3.2, 1.5, 0, 0, Math.PI * 2);
+      ctx.fillStyle = "#1f5c3d"; ctx.fill();
+      ctx.restore();
+    }
+    ctx.restore();
+    ctx.restore();
+
+    // BANGS のタグ
+    ctx.save(); ctx.translate(-36, -52); ctx.rotate(-0.16);
+    ctx.beginPath();
+    ctx.roundRect ? ctx.roundRect(-32, -13, 64, 26, 4) : ctx.rect(-32, -13, 64, 26);
+    fillInk(ctx, "#f5c542", 2.6);
+    ctx.fillStyle = INK; ctx.font = "bold 15px sans-serif"; ctx.textAlign = "center";
+    ctx.fillText("BANGS", 0, 5.5);
+    ctx.restore();
+    ctx.strokeStyle = INK; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(-24, -40); ctx.lineTo(-14, -26); ctx.stroke();
+  }
+
+  // ---------- 描画実行 ----------
+  var MAIN = [
+    { name: "山ちゃん", role: "主人公", draw: drawYamachan, y: 66,
+      tags: ["結婚式の白タキシード（燕尾＋白ベスト）", "白百合のブートニア", "とにかくよく飛ぶ", "笑顔だけは一級品"] },
+    { name: "フック", role: "ラストボス（町田のファミマ前）", draw: drawHook, y: 66,
+      tags: ["性格は怖い", "服が好き", "ギターボーカル", "ストレイテナーが好き"] },
+  ];
+  var ENEMY = [
+    { name: "青木先生", role: "教師", draw: drawAoki, y: 78,
+      tags: ["ちょび髭", "少し痩せ型・メガネ", "シャツ＋ベストセーター＋ネクタイ", "「ヤマウラーー！！！」と叫ぶ"] },
+    { name: "エビちゃん", role: "山ちゃんの元カノ", draw: drawEbi, y: 66,
+      tags: ["ドラマー", "がりがり／足が細い", "バットで殴ったら死ぬ", "接触＝即死級"] },
+    { name: "たけひこ", role: "ギタリスト", draw: drawTakehiko, y: 66,
+      tags: ["ギター要素", "元カノは平井", "ミットン", "芦田愛菜／GANTZが好き"] },
+    { name: "ハシダテ", role: "ギターボーカル", draw: drawHashidate, y: 70,
+      tags: ["パーマをかける", "すね毛処理（片脚ツルツル）", "「もてたい！」", "急にデブになったり痩せたりする"] },
+    { name: "吉野", role: "ドラマー", draw: drawYoshino, y: 66,
+      tags: ["鳥に似てる", "手首が固い", "みんなに頭を殴られる", "「眼鏡はねえだろ！」"] },
+    { name: "布施", role: "デポジット侍", draw: drawFuse, y: 66,
+      tags: ["南町田でキセル", "ドラマー", "汐見という美容師に髪を切ってもらう", "弁当箱を回収して回る"] },
+    { name: "コープの店員", role: "スーパー", draw: drawCoop, y: 70,
+      tags: ["試食で攻撃してくる", "コープのステージに登場", "串を飛ばしてくる"] },
+  ];
+  var ITEM = [
+    { name: "ストレイテナー", role: "CD（弾薬）", draw: drawCdStraightener, y: 150, scale: 1,
+      tags: ["フックに投げ返す弾になる"] },
+    { name: "the band apart", role: "CD（弾薬）", draw: drawCdBandApart, y: 150, scale: 1,
+      tags: ["バンアパ。弾数＋2"] },
+    { name: "アジカン", role: "CD（弾薬）", draw: drawCdAjikan, y: 150, scale: 1,
+      tags: ["ASIAN KUNG-FU GENERATION"] },
+    { name: "フレッドペリーの靴", role: "服アイテム", draw: drawShoes, y: 150, scale: 1,
+      tags: ["BANGSで買った一足", "取ると距離ボーナス", "フックが欲しがる"] },
+  ];
+
+  function render(listId, list, startNo) {
+    var grid = document.getElementById(listId);
+    list.forEach(function (c, idx) {
+      var panel = document.createElement("article");
+      panel.className = "panel";
+
+      var no = document.createElement("span");
+      no.className = "panel-no";
+      no.textContent = ("0" + (startNo + idx)).slice(-2);
+      panel.appendChild(no);
+
+      var plate = document.createElement("div");
+      plate.className = "plate";
+      var cv = document.createElement("canvas");
+      var w = 232, h = 300, dpr = 2;
+      cv.width = w * dpr; cv.height = h * dpr;
+      cv.style.aspectRatio = w + " / " + h;
+      cv.setAttribute("role", "img");
+      cv.setAttribute("aria-label", c.name + "（" + c.role + "）の設定画");
+      var ctx = cv.getContext("2d");
+      ctx.scale(dpr, dpr);
+      ctx.fillStyle = "#f4f1e8"; ctx.fillRect(0, 0, w, h);
+      // 網点がわりの薄い横帯
+      ctx.fillStyle = "rgba(0,0,0,0.035)";
+      for (var i = 0; i < 8; i++) ctx.fillRect(0, 24 + i * 34, w, 12);
+      ctx.save();
+      ctx.translate(w / 2, c.y);
+      var s = c.scale || 0.86;
+      ctx.scale(s, s);
+      c.draw(ctx);
+      ctx.restore();
+      plate.appendChild(cv);
+      panel.appendChild(plate);
+
+      var n = document.createElement("h3"); n.className = "p-name"; n.textContent = c.name;
+      var r = document.createElement("p"); r.className = "p-role"; r.textContent = c.role;
+      var ul = document.createElement("ul"); ul.className = "p-traits";
+      c.tags.forEach(function (t) {
+        var li = document.createElement("li"); li.textContent = t; ul.appendChild(li);
+      });
+      panel.appendChild(n); panel.appendChild(r); panel.appendChild(ul);
+      grid.appendChild(panel);
+    });
+  }
+
+  render("grid-main", MAIN, 1);
+  render("grid-enemy", ENEMY, 3);
+  render("grid-item", ITEM, 10);
+})();
+</script>
+</body>
+</html>
