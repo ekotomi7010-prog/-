@@ -9,7 +9,10 @@ const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const read = (p) => readFileSync(join(root, p), "utf8");
 
 // 出力名は引数で変えられる。古いファイルと取り違えないよう版名を入れて配る用。
-const outName = process.argv[2] || "artifact/yamachan-game.html";
+// --artifact を付けると、Artifact 公開用に doctype/html/head/body を外した形で出す。
+const args = process.argv.slice(2);
+const forArtifact = args.includes("--artifact");
+const outName = args.find((a) => !a.startsWith("--")) || "artifact/yamachan-game.html";
 const VERSION = "第2版 ステージ制";
 
 // import / export 文を落として、素の <script> に流し込める形にする
@@ -27,12 +30,16 @@ const bundle = [
   "/* ── core.js ── */", strip(read("lib/yamachan/core.js")),
 ].join("\n\n");
 
-const html = `<!doctype html>
+const head = forArtifact ? "" : `<!doctype html>
 <html lang="ja">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>山ちゃんが飛ぶ!!</title>
+`;
+const openBody = forArtifact ? "" : "</head>\n<body>";
+const closeBody = forArtifact ? "" : "</body>\n</html>";
+
+const html = `${head}<title>山ちゃんが飛ぶ!!</title>
 <style>
   :root { color-scheme: dark; }
   * { box-sizing: border-box; }
@@ -66,14 +73,13 @@ const html = `<!doctype html>
   }
   .help b { color: #cfd5e0; font-weight: 600; }
 </style>
-</head>
-<body>
+${openBody}
   <h1>山ちゃんが飛ぶ!! <span class="ver">${VERSION}</span></h1>
   <p class="sub">荏田高等学校 → コープ → たまプラーザ → 南町田 → 境川 → 町田</p>
   <canvas id="game"></canvas>
   <p class="help">
     <b>押しっぱなし</b>（タップ長押し / Space / ↑）で上昇、離すと落下。<br>
-    CDを拾ってフックに投げ返せ。このファイル1つで動くので、そのまま友達に送れます。
+    CDを拾ってフックに投げ返せ。
   </p>
 
 <script>
@@ -85,8 +91,7 @@ ${bundle}
 createGame(document.getElementById("game"));
 })();
 </script>
-</body>
-</html>
+${closeBody}
 `;
 
 writeFileSync(join(root, outName), html);
