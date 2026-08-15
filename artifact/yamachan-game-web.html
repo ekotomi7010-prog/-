@@ -58,6 +58,75 @@
   }
   .help b { color: #cfd5e0; font-weight: 600; }
 
+  .fsbtn {
+    appearance: none; border: 1px solid #4a5568;
+    background: linear-gradient(180deg, #f5c542 0%, #e0ac26 100%);
+    color: #17181d; font-weight: 800; font-size: 15px; letter-spacing: .04em;
+    padding: 12px 26px; border-radius: 999px; cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .fsbtn:active { transform: translateY(1px); }
+
+  /* ── 全画面（横向き）モード ───────────────────────────── */
+  .wrap.fs {
+    position: fixed; inset: 0; z-index: 9999;
+    background: #000;
+    display: flex; align-items: center; justify-content: center;
+    padding: 0; margin: 0;
+  }
+  .wrap.fs .stage { width: 100%; height: 100%; align-items: center; justify-content: center; }
+  .wrap.fs canvas {
+    width: auto; height: auto;
+    max-width: 100%; max-height: 100%;
+    aspect-ratio: 900 / 506;
+    border-radius: 0; border: none; box-shadow: none;
+  }
+  .wrap.fs .pad { display: none; }
+
+  /* 全画面時だけ出る左右のサムパッド */
+  .fspad { display: none; }
+  .wrap.fs .fspad {
+    display: flex; align-items: flex-end; justify-content: center;
+    position: fixed; bottom: 0; height: 46%; width: 30%;
+    padding-bottom: calc(10px + env(safe-area-inset-bottom));
+    background: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(245,197,66,.16) 100%);
+    color: rgba(255,255,255,.72); font-size: 12px; font-weight: 700;
+    letter-spacing: .06em; text-shadow: 0 1px 3px rgba(0,0,0,.8);
+    touch-action: none; user-select: none; -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent; cursor: pointer;
+  }
+  .wrap.fs .fspad.left  { left: 0;  border-top-right-radius: 26px; }
+  .wrap.fs .fspad.right { right: 0; border-top-left-radius: 26px; }
+  .wrap.fs .fspad:active {
+    background: linear-gradient(180deg, rgba(245,197,66,.10) 0%, rgba(245,197,66,.50) 100%);
+    color: #fff;
+  }
+
+  .exitfs { display: none; }
+  .wrap.fs .exitfs {
+    /* 回転案内より上に置く。縦のままでも全画面を抜けられるようにするため */
+    display: block; position: fixed; z-index: 3;
+    top: calc(8px + env(safe-area-inset-top)); right: calc(10px + env(safe-area-inset-right));
+    width: 38px; height: 38px; border-radius: 50%;
+    border: 1px solid rgba(255,255,255,.3); background: rgba(0,0,0,.45);
+    color: #fff; font-size: 19px; line-height: 1; cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* 全画面なのに縦向きのときの案内 */
+  .rotate { display: none; }
+  .wrap.fs .rotate {
+    position: fixed; inset: 0; z-index: 2;
+    background: rgba(6,8,12,.94);
+    color: #e8eaf0; font-size: 17px; font-weight: 700; letter-spacing: .05em;
+    display: none; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
+  }
+  .wrap.fs.portrait .rotate { display: flex; }
+  .rotate .ico { font-size: 46px; animation: tilt 1.6s ease-in-out infinite; }
+  @keyframes tilt { 0%,100% { transform: rotate(0deg); } 50% { transform: rotate(90deg); } }
+  @media (prefers-reduced-motion: reduce) { .rotate .ico { animation: none; } }
+  .rotate small { font-weight: 500; font-size: 12.5px; color: #98a1b3; }
+
   /* スマホ縦向き：ゲームを上、操作バーを下に大きく取る */
   @media (max-width: 720px) {
     body { padding: 12px 10px calc(16px + env(safe-area-inset-bottom)); gap: 8px; }
@@ -73,13 +142,26 @@
 
   <h1>山ちゃんが飛ぶ!! <span class="ver">第2版 ステージ制</span></h1>
   <p class="sub">荏田高等学校 → コープ → たまプラーザ → 南町田 → 境川 → 町田</p>
-  <div class="stage">
-    <canvas id="game"></canvas>
+  <div class="wrap" id="wrap">
+    <div class="stage">
+      <canvas id="game"></canvas>
+    </div>
     <div class="pad" id="pad" role="button" tabindex="0" aria-label="上昇">
       <span id="padLabel">タップしてスタート</span>
       <small id="padHint">ここを押している間ずっと上昇します</small>
     </div>
+    <div class="fspad left"  id="padL" role="button" aria-label="上昇">押しっぱなし</div>
+    <div class="fspad right" id="padR" role="button" aria-label="上昇">押しっぱなし</div>
+    <button class="exitfs" id="exitFs" aria-label="全画面をやめる">✕</button>
+    <div class="rotate" id="rotate">
+      <span class="ico">📱</span>
+      スマホを横にしてください
+      <small>横向きにすると画面いっぱいで遊べます</small>
+    </div>
   </div>
+
+  <button class="fsbtn" id="fsBtn">⛶ フルスクリーンで遊ぶ（横画面）</button>
+
   <p class="help">
     <b>下のバーを押しっぱなし</b>で上昇、離すと落下。画面を直接タップしてもOK（Space / ↑ でも可）。<br>
     CDを拾ってフックに投げ返せ。
@@ -1347,7 +1429,7 @@ const BIOS = [
 
 /* ── 本体 ─────────────────────────────────────────────────── */
 
-// opts.controls に要素を渡すと、そこを押している間も上昇する。
+// opts.controls に要素（配列でも可）を渡すと、そこを押している間も上昇する。
 // スマホで画面を親指で隠さずに操作するための操作バー用。
 function createGame(canvas, opts) {
   opts = opts || {};
@@ -2128,7 +2210,8 @@ function createGame(canvas, opts) {
     canvas.style.cursor = hitButton(toCanvas(e)) ? "pointer" : "default";
   }
 
-  const pad = opts.controls || null;
+  // 操作バーは複数渡せる（全画面の左右サム用）
+  const pads = [].concat(opts.controls || []).filter(Boolean);
 
   canvas.addEventListener("pointerdown", onDown);
   canvas.addEventListener("pointermove", onMove);
@@ -2136,9 +2219,10 @@ function createGame(canvas, opts) {
   window.addEventListener("pointercancel", onUp);
   window.addEventListener("keydown", onKeyDown);
   window.addEventListener("keyup", onKeyUp);
-  if (pad) {
+  const noMenu = (e) => e.preventDefault();
+  for (const pad of pads) {
     pad.addEventListener("pointerdown", onPadDown);
-    pad.addEventListener("contextmenu", (e) => e.preventDefault());
+    pad.addEventListener("contextmenu", noMenu);
   }
 
   reset();
@@ -2155,13 +2239,82 @@ function createGame(canvas, opts) {
       window.removeEventListener("pointercancel", onUp);
       window.removeEventListener("keydown", onKeyDown);
       window.removeEventListener("keyup", onKeyUp);
-      if (pad) pad.removeEventListener("pointerdown", onPadDown);
+      for (const pad of pads) {
+        pad.removeEventListener("pointerdown", onPadDown);
+        pad.removeEventListener("contextmenu", noMenu);
+      }
     },
   };
 }
 
 var pad = document.getElementById("pad");
-var game = createGame(document.getElementById("game"), { controls: pad });
+var padL = document.getElementById("padL");
+var padR = document.getElementById("padR");
+var game = createGame(document.getElementById("game"), { controls: [pad, padL, padR] });
+
+/* ── 全画面（横画面）まわり ──────────────────────────────
+   iPhone の Safari は要素の全画面 API に対応していないので、
+   その場合は CSS で画面いっぱいに広げる方式に自動で切り替える。 */
+var wrap = document.getElementById("wrap");
+var fsBtn = document.getElementById("fsBtn");
+var exitFsBtn = document.getElementById("exitFs");
+
+function isPortrait() {
+  return window.matchMedia("(orientation: portrait)").matches;
+}
+function syncPortrait() {
+  wrap.classList.toggle("portrait", wrap.classList.contains("fs") && isPortrait());
+}
+
+function enterFs() {
+  var el = wrap;
+  var req = el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen;
+  if (req) {
+    try {
+      var r = req.call(el, { navigationUI: "hide" });
+      if (r && r.catch) r.catch(function () {});
+    } catch (e) { /* 使えなければ CSS 方式で続行 */ }
+  }
+  if (screen.orientation && screen.orientation.lock) {
+    try {
+      var p = screen.orientation.lock("landscape");
+      if (p && p.catch) p.catch(function () {});
+    } catch (e) { /* iOS などは回転ロック不可。案内を出して対応 */ }
+  }
+  wrap.classList.add("fs");
+  syncPortrait();
+}
+
+function exitFs() {
+  var ex = document.exitFullscreen || document.webkitExitFullscreen || document.msExitFullscreen;
+  if (ex && (document.fullscreenElement || document.webkitFullscreenElement)) {
+    try {
+      var r = ex.call(document);
+      if (r && r.catch) r.catch(function () {});
+    } catch (e) {}
+  }
+  if (screen.orientation && screen.orientation.unlock) {
+    try { screen.orientation.unlock(); } catch (e) {}
+  }
+  wrap.classList.remove("fs", "portrait");
+}
+
+fsBtn.addEventListener("click", enterFs);
+exitFsBtn.addEventListener("click", exitFs);
+
+// ブラウザ側の操作で全画面が解除されたときに表示を戻す
+["fullscreenchange", "webkitfullscreenchange"].forEach(function (ev) {
+  document.addEventListener(ev, function () {
+    if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+      wrap.classList.remove("fs", "portrait");
+    }
+  });
+});
+window.addEventListener("orientationchange", function () { setTimeout(syncPortrait, 120); });
+window.addEventListener("resize", syncPortrait);
+document.addEventListener("keydown", function (e) {
+  if (e.key === "Escape") wrap.classList.remove("fs", "portrait");
+});
 
 // 操作バーの文言を今の画面に合わせて出し分ける
 var padLabel = document.getElementById("padLabel");
